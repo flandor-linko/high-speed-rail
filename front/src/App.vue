@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
-import Equip from './pages/edit/Equip.vue';
+// import HelloWorld from './components/HelloWorld.vue';
+// import Equip from './pages/edit/Equip.vue';
+// import Home from './pages/view/Home.vue';
 
-const routes = [
-  { path: '/', component: HelloWorld },
-  { path: '/equip', component: Equip },
-]
+// const routes = [
+//   { path: '/', component: Home },
+//   { path: '/equip', component: Equip },
+// ]
 
 </script>
 
