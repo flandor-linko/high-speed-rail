@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "ant-design-vue": "^4.1.1",
+    "lodash": "^4.17.21",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@types/node": "^20.11.5",
     "@vitejs/plugin-vue": "^4.5.2",
     "typescript": "^5.2.2",
     "unplugin-vue-components": "^0.26.0",
