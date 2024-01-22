@@ -19,10 +19,10 @@ app.all("*", function (req, res, next) {
 });
  
 // 测试是否连接成功
-app.post('/', (req, res) => {
-    console.log(req.body);
+app.get('/', (req, res) => {
+    console.log();
     res.send({
-        data: '连接成功',
+        data: '连接成功----',
         status: 200
     })
 })
