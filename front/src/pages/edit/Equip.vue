@@ -5,6 +5,7 @@ import { UploadOutlined } from '@ant-design/icons-vue';
 import type { UploadProps } from 'ant-design-vue';
 
 const equipType = ref<string>('1');
+const cycleValue = ref<number>(1);
 const cycle = ref<string>('1');
 const open = ref<boolean>(false);
 const fileList = ref<UploadProps['fileList']>([
@@ -115,12 +116,19 @@ const initModalData = () => {
                 <a-radio-button value="9">桥梁</a-radio-button>
             </a-radio-group>
 
-            <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;margin-top: 1rem;">
-                <a-radio-group v-model:value="cycle" name="cycle">
-                    <a-radio value="1">天</a-radio>
-                    <a-radio value="2">周</a-radio>
-                    <a-radio value="3">月</a-radio>
-                </a-radio-group>
+            <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;margin-top: 1rem;display: flex;">
+                <a-row>
+                    <a-col>
+                        <a-input-number size="large" id="inputNumber" v-model:value="cycleValue" :min="1" :max="10" />
+                    </a-col>
+                    <a-col>
+                        <a-select size="large" ref="select" v-model:value="cycle" style="width: 120px">
+                            <a-select-option value="1">天</a-select-option>
+                            <a-select-option value="2">周</a-select-option>
+                            <a-select-option value="3">月</a-select-option>
+                        </a-select>
+                    </a-col>
+                </a-row>
             </a-form-item>
         </h2>
         <a-form layout="vertical" :model="formState">
@@ -169,15 +177,6 @@ const initModalData = () => {
                 </a-col>
                 <a-col class="gutter-row" :span="12">
                     <a-card title="作业指导" :bordered="false">
-                        <a-form-item label="设计图" name="video">
-                            <a-upload v-model:file-list="fileList"
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
-                                <a-button>
-                                    <upload-outlined></upload-outlined>
-                                    上传设计图文件
-                                </a-button>
-                            </a-upload>
-                        </a-form-item>
                         <a-form-item label="设计图" name="video">
                             <a-upload v-model:file-list="fileList"
                                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
