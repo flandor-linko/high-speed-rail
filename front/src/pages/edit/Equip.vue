@@ -31,8 +31,7 @@
             <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;margin-top: 1rem;display: flex;">
                 <a-row>
                     <a-col>
-                        <a-input-number size="large" id="inputNumber" v-model:value="cycleValue" :min="1"
-                            addon-after="月" />
+                        <a-input-number size="large" id="inputNumber" v-model:value="cycleValue" :min="1" addon-after="月" />
                     </a-col>
                     <!-- <a-col>
                         <a-select size="large" ref="select" v-model:value="cycle" style="width: 120px">
@@ -78,11 +77,12 @@
                             <a-button type="primary" @click="saveEquipInfo">保存</a-button>
                         </a-form-item>
                         <a-form-item label="视频文件" name="video">
-                            <a-upload v-model:file-list="fileList" :max-count="1" accept="video/*"
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
+                            <a-upload v-model:file-list="videoFile" :max-count="1" accept="video/*" @change="handleChange"
+                                @remove="handleRemove" :data="{ deviceType: equipType, limit: 1, type: '2-1' }"
+                                :action="Utils.uploadUrl">
                                 <a-button>
                                     <upload-outlined></upload-outlined>
-                                    上传视频文件（最多1个）
+                                    上传视频文件
                                 </a-button>
                             </a-upload>
                         </a-form-item>
@@ -90,36 +90,40 @@
                 </a-col>
                 <a-col class="gutter-row" :span="12">
                     <a-card title="作业指导" :bordered="false">
-                        <a-form-item label="设计图" name="video">
-                            <a-upload v-model:file-list="fileList"
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
+                        <a-form-item label="设计图" name="designFile">
+                            <a-upload v-model:file-list="designFile" :max-count="10" @change="handleChange"
+                                @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-2' }"
+                                :action="Utils.uploadUrl">
                                 <a-button>
                                     <upload-outlined></upload-outlined>
                                     上传设计图文件
                                 </a-button>
                             </a-upload>
                         </a-form-item>
-                        <a-form-item label="作业指导书" name="video">
-                            <a-upload v-model:file-list="fileList"
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
+                        <a-form-item label="作业指导书" name="workGuideFile">
+                            <a-upload v-model:file-list="workGuideFile" :max-count="10" @change="handleChange"
+                                @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-3' }"
+                                :action="Utils.uploadUrl">
                                 <a-button>
                                     <upload-outlined></upload-outlined>
                                     上传作业指导书
                                 </a-button>
                             </a-upload>
                         </a-form-item>
-                        <a-form-item label="技术指导" name="video">
-                            <a-upload v-model:file-list="fileList"
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
+                        <a-form-item label="技术指导" name="skillGuideFile">
+                            <a-upload v-model:file-list="skillGuideFile" :max-count="10" @change="handleChange"
+                                @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-4' }"
+                                :action="Utils.uploadUrl">
                                 <a-button>
                                     <upload-outlined></upload-outlined>
                                     上传技术指导
                                 </a-button>
                             </a-upload>
                         </a-form-item>
-                        <a-form-item label="投稿" name="video">
-                            <a-upload v-model:file-list="fileList"
-                                action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
+                        <a-form-item label="投稿" name="contributeFile">
+                            <a-upload v-model:file-list="contributeFile" :max-count="10" @change="handleChange"
+                                @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-5' }"
+                                :action="Utils.uploadUrl">
                                 <a-button>
                                     <upload-outlined></upload-outlined>
                                     上传投稿文件
@@ -137,9 +141,10 @@
 <script lang="ts">
 import _ from "lodash";
 // import { UploadOutlined } from '@ant-design/icons-vue';
-import type { UploadProps } from 'ant-design-vue';
+import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
 import http from "../../util/http";
+import Utils from "../../util/utils";
 
 interface EquipType {
     id: number;
@@ -152,16 +157,30 @@ interface DataItem {
     name: string;
     value: string;
 }
-interface ParamType {key: string, value: string}
-interface OtherObj {des: string, paramList: ParamType[]}
+interface ParamType { key: string, value: string }
+interface OtherObj { des: string, paramList: ParamType[] }
 
 export default {
     data() {
         return {
+            Utils: Utils,
             greeting: "设备信息管理",
             equipType: 0,
             paramList: [] as ParamType[],
-            fileList : ([
+            videoFile: ([
+                // {
+                //     uid: '1',
+                //     name: 'xxx.png',
+                //     status: 'done',
+                //     response: 'Server Error 500', // custom error message to show
+                //     url: 'http://www.baidu.com/xxx.png',
+                // }
+            ]) as UploadProps['fileList'],
+            designFile: ([]) as UploadProps['fileList'],
+            workGuideFile: ([]) as UploadProps['fileList'],
+            skillGuideFile: ([]) as UploadProps['fileList'],
+            contributeFile: ([]) as UploadProps['fileList'],
+            fileList: ([
                 {
                     uid: '1',
                     name: 'xxx.png',
@@ -209,6 +228,46 @@ export default {
                 this.typeChange();
             };
         },
+        async getFileList() {
+            const res1 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-1" } });
+            const res2 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-2" } });
+            const res3 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-3" } });
+            const res4 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-4" } });
+            const res5 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-5" } });
+            const res = await Promise.all([res1, res2, res3, res4, res5]);
+            if (res) {
+                const videoInfo = res[0].data.data;
+                this.videoFile = (videoInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                const designInfo = res[1].data.data;
+                this.designFile = (designInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                const workGuideInfo = res[2].data.data;
+                this.workGuideFile = (workGuideInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                const skillGuideInfo = res[3].data.data;
+                this.skillGuideFile = (skillGuideInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                const contributeInfo = res[4].data.data;
+                this.contributeFile = (contributeInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+            }
+        },
+        handleChange(info: UploadChangeParam) {
+            if (info.file.status === 'done') {
+                message.success(`${info.file.name} 文件上传成功`);
+                this.getFileList();
+            } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} 文件上传失败`);
+            }
+        },
+        async handleRemove(file) {
+            const res = await http.get("/demo/file/delete.json", {
+                params: {
+                    id: +file.uid,
+                }
+            });
+
+            if (res.data.status === 200) {
+                message.success(`${file.name} 文件删除成功`);
+                this.getFileList();
+            }
+        },
 
         handleAdd() {
             this.open = true;
@@ -231,6 +290,7 @@ export default {
                 }
 
             }
+            await this.getFileList();
         },
         save(name: string) {
             Object.assign(this.dataSource.filter(item => name === item.name)[0], this.editableData[name]);
@@ -249,13 +309,13 @@ export default {
             }
             const otherObj = {
                 des: this.formState.des,
-                paramList:this.dataSource
+                paramList: this.dataSource
             };
-            const otherStr = JSON.stringify(otherObj); 
+            const otherStr = JSON.stringify(otherObj);
             const data = {
                 id: this.equipType,
                 cycle: this.cycleValue,
-                other:otherStr,
+                other: otherStr,
             }
             // 修改为body中传参
             http.post("/demo/deviceType/update.json", data).then(res => {
