@@ -1,3 +1,4 @@
+
 <template>
     <a-modal v-model:open="open" title="请输入新的参数名称和参数值" @ok="handleOk" @cancel="handleCancel">
         <a-form :model="modalData" :label-col="{ span: 6 }" :wrapper-col="{ span: 18 }" style="margin-top: 2rem;">
@@ -14,7 +15,7 @@
         </div>
         <h2>&nbsp;&nbsp;&nbsp;&nbsp;{{ greeting }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-            <a-radio-group v-model:value="equipType" button-style="solid" @change="typeChange">
+            <a-radio-group v-model:value="equipType" button-style="solid">
                 <a-radio-button v-for="item in equipTypeList" :value="+item.id" :key="item.id">{{ item.type
                 }}</a-radio-button>
                 <!-- <a-radio-button value="1">轨道</a-radio-button>
@@ -31,7 +32,7 @@
             <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;margin-top: 1rem;display: flex;">
                 <a-row>
                     <a-col>
-                        <a-input-number size="large" id="inputNumber" v-model:value="cycleValue" :min="1"
+                        <a-input-number size="large" id="inputNumber" v-model:value="cycleValue" :min="1" :max="10"
                             addon-after="月" />
                     </a-col>
                     <!-- <a-col>
@@ -74,9 +75,6 @@
                                 </template>
                             </template>
                         </a-table>
-                        <a-form-item :wrapper-col="{ offset: 20, span: 4 }" style="margin-top: 1rem;">
-                            <a-button type="primary" @click="saveEquipInfo">保存</a-button>
-                        </a-form-item>
                         <a-form-item label="视频文件" name="video">
                             <a-upload v-model:file-list="fileList" :max-count="1" accept="video/*"
                                 action="https://www.mocky.io/v2/5cc8019d300000980a055e76">
@@ -85,6 +83,9 @@
                                     上传视频文件（最多1个）
                                 </a-button>
                             </a-upload>
+                        </a-form-item>
+                        <a-form-item :wrapper-col="{ offset: 20, span: 4 }">
+                            <a-button type="primary" html-type="submit">保存</a-button>
                         </a-form-item>
                     </a-card>
                 </a-col>
@@ -134,12 +135,52 @@
 </template>
 
 
-<script lang="ts">
+<script setup lang="ts">
+import { Ref, UnwrapRef, onMounted, reactive, ref } from 'vue';
 import _ from "lodash";
-// import { UploadOutlined } from '@ant-design/icons-vue';
+import { UploadOutlined } from '@ant-design/icons-vue';
 import type { UploadProps } from 'ant-design-vue';
-import { message } from 'ant-design-vue';
 import http from "../../util/http";
+
+let equipType = ref<string>('0');
+const cycleValue = ref<number>(1);
+let equipTypeList: Ref<EquipType[]> = ref([]);
+// const cycle = ref<string>('1');
+const open = ref<boolean>(false);
+const fileList = ref<UploadProps['fileList']>([
+    {
+        uid: '1',
+        name: 'xxx.png',
+        status: 'done',
+        response: 'Server Error 500', // custom error message to show
+        url: 'http://www.baidu.com/xxx.png',
+    }
+]);
+const greeting = ref('设备信息管理');
+let modalData = { name: "", value: "" };
+const columns = [
+    {
+        title: '参数名称',
+        dataIndex: 'name',
+        width: '40%',
+    },
+    {
+        title: '参数值',
+        dataIndex: 'value',
+        width: '35%',
+    },
+    {
+        title: '操作',
+        dataIndex: 'operation',
+    },
+];
+
+const dataSource: Ref<DataItem[]> = ref([]);
+
+interface DataItem {
+    name: string;
+    value: string;
+}
 
 interface EquipType {
     id: number;
@@ -148,140 +189,59 @@ interface EquipType {
     other: string,
 }
 
-interface DataItem {
-    name: string;
-    value: string;
+interface FormState {
+    des: string
 }
-interface ParamType {key: string, value: string}
-interface OtherObj {des: string, paramList: ParamType[]}
+const formState: UnwrapRef<FormState> = reactive({
+    des: ""
+});
 
-export default {
-    data() {
-        return {
-            greeting: "设备信息管理",
-            equipType: 0,
-            paramList: [] as ParamType[],
-            fileList : ([
-                {
-                    uid: '1',
-                    name: 'xxx.png',
-                    status: 'done',
-                    response: 'Server Error 500', // custom error message to show
-                    url: 'http://www.baidu.com/xxx.png',
-                }
-            ]) as UploadProps['fileList'],
-            equipTypeList: [] as EquipType[],
-            cycleValue: 1,
-            formState: {
-                des: "",
-            },
-            open: false,
-            modalData: { name: "", value: "" },
-            columns: [
-                {
-                    title: '参数名称',
-                    dataIndex: 'name',
-                    width: '40%',
-                },
-                {
-                    title: '参数值',
-                    dataIndex: 'value',
-                    width: '35%',
-                },
-                {
-                    title: '操作',
-                    dataIndex: 'operation',
-                },
-            ],
-            dataSource: [] as DataItem[],
-            editableData: {} as Record<string, DataItem>,
-        }
-    },
-    async created() {
-        await this.getEquipTypeList();
-    },
-    methods: {
-        async getEquipTypeList() {
-            const res = await http.get("/demo/deviceType/list.json");
-            if (res && res.data && res.data.status === 200) {
-                this.equipTypeList = res.data.data;
-                this.equipType = this.equipTypeList[0].id;
-                this.typeChange();
-            };
-        },
+const editableData: UnwrapRef<Record<string, DataItem>> = reactive({});
 
-        handleAdd() {
-            this.open = true;
-        },
-        async typeChange() {
-            const res = await http.get("/demo/deviceType/get.json", {
-                params: {
-                    id: this.equipType,
-                }
-            });
-            if (res.data.status === 200 && res.data.data) {
-                this.cycleValue = res.data.data.cycle;
-                if (!!res.data.data.other) {
-                    const otherObj = JSON.parse(res.data.data.other) as OtherObj;
-                    this.dataSource = otherObj.paramList as any;
-                    this.formState.des = otherObj.des;
-                } else {
-                    this.dataSource = [];
-                    this.formState.des = "";
-                }
+onMounted(() => {
+    getEquipTypeList();
+})
 
-            }
-        },
-        save(name: string) {
-            Object.assign(this.dataSource.filter(item => name === item.name)[0], this.editableData[name]);
-            delete this.editableData[name];
-        },
-        edit(name: string) {
-            this.editableData[name] = _.cloneDeep(this.dataSource.filter(item => name === item.name)[0]);
-        },
-        onDelete(name: string) {
-            this.dataSource = this.dataSource.filter(item => item.name !== name);
-        },
-        saveEquipInfo() {
-            if (!this.formState.des) {
-                message.error('请输入文字介绍');
-                return;
-            }
-            const otherObj = {
-                des: this.formState.des,
-                paramList:this.dataSource
-            };
-            const otherStr = JSON.stringify(otherObj); 
-            const data = {
-                id: this.equipType,
-                cycle: this.cycleValue,
-                other:otherStr,
-            }
-            // 修改为body中传参
-            http.post("/demo/deviceType/update.json", data).then(res => {
-                if (res && res.data && res.data.status === 200) {
-                    message.success("保存成功");
-                }
-            });
-        },
+const getEquipTypeList = async () => {
+    const res = await http.post("/demo/deviceType/list.json");
+    if (res && res.data && res.data.status === 200) {
+        // equipType = equipTypeList[0].id;
+        equipTypeList = res.data.data as any;
+    };
+};
 
-        handleOk() {
-            if (!this.modalData.name || !this.modalData.value) {
-                return;
-            }
-            this.open = false;
-            const newData = { name: this.modalData.name, value: this.modalData.value };
-            this.initModalData();
-            this.dataSource.push(newData);
-        },
-        handleCancel() {
-            this.open = false;
-            this.initModalData();
-        },
-        initModalData() {
-            this.modalData = { name: "", value: "" };
-        }
+const edit = (name: string) => {
+    editableData[name] = _.cloneDeep(dataSource.value.filter(item => name === item.name)[0]);
+};
+const save = (name: string) => {
+    Object.assign(dataSource.value.filter(item => name === item.name)[0], editableData[name]);
+    delete editableData[name];
+};
+
+const onDelete = (name: string) => {
+    dataSource.value = dataSource.value.filter(item => item.name !== name);
+};
+const handleAdd = () => {
+    open.value = true;
+};
+
+const handleOk = () => {
+    if (!modalData.name || !modalData.value) {
+        return;
     }
+    open.value = false;
+    const newData = { name: modalData.name, value: modalData.value };
+    initModalData();
+    dataSource.value.push(newData);
+};
+
+const handleCancel = () => {
+    open.value = false;
+    initModalData();
+};
+
+const initModalData = () => {
+    modalData = { name: "", value: "" };
 }
 
 </script>
