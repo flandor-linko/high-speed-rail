@@ -47,7 +47,7 @@
             <a-row :gutter="40">
                 <a-col class="gutter-row" :span="12">
                     <a-card title="设备简介" :bordered="false">
-                        <a-form-item label="文字介绍" name="des">
+                        <a-form-item label="● 文字介绍" name="des">
                             <a-textarea :rows="2" placeholder="请输入文字介绍" :maxlength="12" v-model:value="formState.des" />
                         </a-form-item>
                         <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">添加参数</a-button>
@@ -76,7 +76,7 @@
                         <a-form-item :wrapper-col="{ offset: 20, span: 4 }" style="margin-top: 1rem;">
                             <a-button type="primary" @click="saveEquipInfo">保存</a-button>
                         </a-form-item>
-                        <a-form-item label="视频文件" name="video">
+                        <a-form-item label="● 视频文件" name="video">
                             <a-upload v-model:file-list="videoFile" :max-count="1" accept="video/*" @change="handleChange"
                                 @remove="handleRemove" :data="{ deviceType: equipType, limit: 1, type: '2-1' }"
                                 :action="Utils.uploadUrl">
@@ -90,7 +90,7 @@
                 </a-col>
                 <a-col class="gutter-row" :span="12">
                     <a-card title="作业指导" :bordered="false">
-                        <a-form-item label="设计图" name="designFile">
+                        <a-form-item label="● 设计图" name="designFile">
                             <a-upload v-model:file-list="designFile" :max-count="10" @change="handleChange"
                                 @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-2' }"
                                 :action="Utils.uploadUrl">
@@ -100,7 +100,7 @@
                                 </a-button>
                             </a-upload>
                         </a-form-item>
-                        <a-form-item label="作业指导书" name="workGuideFile">
+                        <a-form-item label="● 作业指导书" name="workGuideFile">
                             <a-upload v-model:file-list="workGuideFile" :max-count="10" @change="handleChange"
                                 @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-3' }"
                                 :action="Utils.uploadUrl">
@@ -110,7 +110,7 @@
                                 </a-button>
                             </a-upload>
                         </a-form-item>
-                        <a-form-item label="技术指导" name="skillGuideFile">
+                        <a-form-item label="● 技术指导" name="skillGuideFile">
                             <a-upload v-model:file-list="skillGuideFile" :max-count="10" @change="handleChange"
                                 @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-4' }"
                                 :action="Utils.uploadUrl">
@@ -120,7 +120,7 @@
                                 </a-button>
                             </a-upload>
                         </a-form-item>
-                        <a-form-item label="投稿" name="contributeFile">
+                        <a-form-item label="● 投稿" name="contributeFile">
                             <a-upload v-model:file-list="contributeFile" :max-count="10" @change="handleChange"
                                 @remove="handleRemove" :data="{ deviceType: equipType, limit: 10, type: '2-5' }"
                                 :action="Utils.uploadUrl">
