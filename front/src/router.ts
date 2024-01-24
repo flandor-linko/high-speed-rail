@@ -5,7 +5,19 @@ const routes = [
     {
         path: '/',
         name: 'Home',
-        component: () => import('./pages/view/Home.vue')
+        component: () => import('./pages/view/Home.vue'),
+        children: [
+            {
+                path: '/',
+                name: 'homeInfo',
+                component: () => import('./pages/view/homeInfo/HomeInfo.vue')
+            },
+            {
+                path: '/station/:id',
+                name: 'station',
+                component: () => import('./pages/view/station/Station.vue')
+            },
+        ]
     },
     {
         path: '/equip',
