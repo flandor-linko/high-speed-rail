@@ -8,7 +8,7 @@
             </a-radio-group>
         </a-col>
     </a-row>
-    <a-card title="站点设备信息图" style="width: 1024px" :bodyStyle="{padding: '0px'}">
+    <a-card title="站点设备信息图" style="width: 1024px" :bodyStyle="{ padding: '0px' }">
         <template #extra>
             <div v-if="mode === Mode.View" class="edit-row">
                 <div @click="clickEdit">
@@ -28,9 +28,12 @@
             </div>
         </template>
         <div>
-            <draggable :style="{'background-image':'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id: '') + ')'}" class="drag-area" v-model="spotList" @end="dragEnd" item-key="id">
+            <draggable
+                :style="{ 'background-image': 'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id : '') + ')' }"
+                class="drag-area" v-model="spotList" @end="dragEnd" item-key="id">
                 <template #item="{ element }">
-                    <div class="hot-item" :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }">
+                    <div class="hot-item" @click="clickSpot(element)"
+                        :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }">
                         <FlagTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
                     </div>
@@ -39,22 +42,36 @@
         </div>
     </a-card>
     <a-modal v-model:open="open" title="请上传底图" @ok="modalOk">
-        <a-upload v-model:file-list="picFile" :max-count="1" accept="image/*" @change="handleChange"
-            @remove="handleRemove" :data="{ deviceType: stationId, limit: 1, type: '3' }" :action="Utils.uploadUrl">
+        <a-upload v-model:file-list="picFile" :max-count="1" accept="image/*" @change="handleChange" @remove="handleRemove"
+            :data="{ deviceType: stationId, limit: 1, type: '3' }" :action="Utils.uploadUrl">
             <a-button>
                 <upload-outlined></upload-outlined>
                 上传底图文件
             </a-button>
         </a-upload>
     </a-modal>
+    <a-modal v-model:open="spotEditOpen" title="请上传底图" @ok="spotEditModalOk">
+        <a-form-item label="设备名称" name="name">
+            <a-input v-model:value="spotEditData.name" style="width: 120px" />
+        </a-form-item>
+        <a-form-item label="设备类型" name="name">
+            <a-select v-model:value="spotEditData.type" style="width: 120px">
+                <a-select-option v-for="item in equipTypeList" :value="item.id" :key="item.id">{{ item.type
+                }}</a-select-option>
+            </a-select>
+        </a-form-item>
+        <a-form-item label="删除设备" name="name">
+            <a-button @click="clickDel">删除设备</a-button>
+        </a-form-item>
+    </a-modal>
 </template>
 
 <script lang="ts">
-// import { EditFilled } from "@ant-design/icons-vue";
 import { UploadChangeParam, UploadProps, message } from "ant-design-vue";
 import http from "../../../util/http";
 import draggable from 'vuedraggable'
 import Utils from "../../../util/utils";
+import _ from "lodash";
 
 interface EquipType {
     id: number;
@@ -69,8 +86,8 @@ interface SpotType {
     "name": string,
     "stationId": 1,
     "type": number,
-    "lastFixTime": string,
-    "nextFixTime": string,
+    "lastFixTime"?: string,
+    "nextFixTime"?: string,
     "position": PositionType
 }
 
@@ -84,13 +101,27 @@ enum Mode {
     View
 }
 
+let spotDefaultValue = {
+    id: 0,
+    type: -1,
+    stationId: '-1',
+    name: "设备",
+    position: {
+        x: 100,
+        y: 100
+    },
+};
+
 export default {
     components: {
         draggable,
     },
     data() {
         return {
+            curAddId: -1,
             open: false,
+            spotEditOpen: false,
+            spotEditData: undefined,
             /**设备点列表 */
             spotList: [
                 // {
@@ -113,20 +144,33 @@ export default {
         }
     },
     async created() {
-        this.stationId = this.$route.params.id?this.$route.params.id:"0";
+        this.stationId = this.$route.params.id ? this.$route.params.id : "0";
+        spotDefaultValue.stationId = this.stationId;
         await this.getEquipTypeList();
         await this.getPicFile();
+        await this.getSpotList();
     },
     methods: {
         async getEquipTypeList() {
             const res = await http.get("/demo/deviceType/list.json");
             if (res && res.data && res.data.status === 200) {
                 this.equipTypeList = res.data.data;
-                // this.equipType = this.equipTypeList[0].id;
+                spotDefaultValue.type = this.equipTypeList[0].id;
                 this.typeChange();
             };
         },
-
+        async getSpotList() {
+            const res = await http.get("/demo/device/list.json?stationId=" + this.stationId);
+            if (res && res.data && res.data.status === 200) {
+                const spotList = res.data.data;
+                this.spotList = _.map(spotList, (item: SpotType) => {
+                    return {
+                        ...item,
+                        position: JSON.parse(item.position)
+                    }
+                });
+            }
+        },
         async typeChange() {
 
         },
@@ -140,7 +184,7 @@ export default {
                 this.picFile = [res1.data.data[0]];
             }
         },
-        handleChange(info: UploadChangeParam){
+        handleChange(info: UploadChangeParam) {
             if (info.file.status === 'done') {
                 message.success(`${info.file.name} 文件上传成功`);
                 this.getPicFile();
@@ -178,19 +222,71 @@ export default {
             this.open = true;
         },
         clickAdd() {
-            // const newSpot = {
-            //     "id": 1,
-            //     "name": "1",
-            //     "stationId": 1,
-            //     "type": 1,
-            //     "lastFixTime": "2024-01-22T08:54:48.000+0000",
-            //     "nextFixTime": "2024-02-21T16:00:00.000+0000",
-            //     "position": { x: 100, y: 100 }
-            // } as SpotType;
-            // this.spotList.push(newSpot);
+            const newSpotData = _.cloneDeep(spotDefaultValue);
+            newSpotData.id = this.curAddId;
+            this.curAddId--;
+            this.spotList.push(newSpotData);
+            this.spotEditData = newSpotData;
+            this.spotEditOpen = true;
         },
-        clickOk() {
-            this.mode = Mode.View;
+        clickSpot(spot) {
+            this.spotEditData = spot;
+            this.spotEditOpen = true;
+        },
+        spotEditModalOk() {
+            this.spotEditOpen = false;
+            // this.spotList = this.spotList.filter(item => item.id!== this.spotEditData.id);
+            // this.spotList.push(this.spotEditData);
+        },
+        async clickDel() {
+            const id = this.spotEditData.id;
+            if (id > 0) {
+                const res = await http.get("/demo/device/delete.json", {
+                    params: {
+                        id: id,
+                    }
+                });
+                if (res.data.status === 200) {
+                    message.success("删除成功");
+                    this.spotList.splice(this.spotList.findIndex(item => item.id === id), 1);
+                    this.spotEditOpen = false;
+                }
+            } else {
+                this.spotList.splice(this.spotList.findIndex(item => item.id === id), 1);
+                message.success("删除成功");
+                this.spotEditOpen = false;
+            }
+        },
+        async clickOk() {
+            const spotList = _.cloneDeep(this.spotList);
+            const requestList = [];
+            spotList.forEach(spot => {
+                //  增
+                if (spot.id < 0) {
+                    delete spot.id;
+                    const data = { ...spot, stationId: +this.stationId, position: JSON.stringify(spot.position) };
+                    const request = http.post("/demo/device/create.json", data);
+                    requestList.push(request);
+                    //  改
+                } else {
+                    const data = { ...spot, stationId: +this.stationId, position: JSON.stringify(spot.position) };
+                    const request = http.post("/demo/device/update.json", data);
+                    requestList.push(request);
+                    //  删
+                }
+                // else {
+                //     const request = http.get("/demo/device/delete.json?id=" + (-spot.id));
+                //     requestList.push(request);
+                // }
+            });
+            const res = await Promise.all(requestList);
+            if (res.every(item => item.data.status === 200)) {
+                message.success("操作成功");
+                this.mode = Mode.View;
+            } else {
+                message.error("操作失败");
+
+            }
         },
     }
 }
@@ -212,7 +308,7 @@ export default {
     position: relative;
     width: 1024px;
     height: 768px;
-    background-size:contain;
+    background-size: contain;
 }
 
 .hot-item {
