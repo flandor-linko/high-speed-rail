@@ -180,15 +180,6 @@ export default {
             workGuideFile: ([]) as UploadProps['fileList'],
             skillGuideFile: ([]) as UploadProps['fileList'],
             contributeFile: ([]) as UploadProps['fileList'],
-            fileList: ([
-                {
-                    uid: '1',
-                    name: 'xxx.png',
-                    status: 'done',
-                    response: 'Server Error 500', // custom error message to show
-                    url: 'http://www.baidu.com/xxx.png',
-                }
-            ]) as UploadProps['fileList'],
             equipTypeList: [] as EquipType[],
             cycleValue: 1,
             formState: {
