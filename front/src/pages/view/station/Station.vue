@@ -8,7 +8,7 @@
             </a-radio-group>
         </a-col>
     </a-row>
-    <a-card title="站点设备信息图" style="width: 1024px" :bodyStyle="{ padding: '0px' }">
+    <a-card title="站点设备信息图" style="width: 1027px" :bodyStyle="{ padding: '1px' }">
         <template #extra>
             <div v-if="mode === Mode.View" class="edit-row">
                 <div @click="clickEdit">
@@ -28,7 +28,7 @@
             </div>
         </template>
         <div>
-            <draggable
+            <draggable v-if="mode === Mode.Edit"
                 :style="{ 'background-image': 'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id : '') + ')' }"
                 class="drag-area" v-model="spotList" @end="dragEnd" item-key="id">
                 <template #item="{ element }">
@@ -39,6 +39,41 @@
                     </div>
                 </template>
             </draggable>
+            <div v-else
+                :style="{ 'background-image': 'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id : '') + ')' }"
+                class="drag-area">
+                <div v-for="element in spotList" :key="element.id" class="hot-item"
+                    :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }">
+
+                    <a-popover v-if="equipType===-1" :title="element.name" trigger="hover">
+                        <template #content>
+                            <p>设备类型：{{ equipTypeList.find(item => item.id===element.type).type }}</p>
+                            <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
+                            <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
+                        </template>
+                        <EnvironmentTwoTone style="font-size:1.6rem;" />
+                        <span>{{ element.name }}</span>
+                    </a-popover>
+                    <a-popover v-else-if="equipType===element.type" :title="element.name" trigger="hover" :open="popoverOpen">
+                        <template #content>
+                            <p>设备类型：{{ equipTypeList.find(item => item.id===element.type).type }}</p>
+                            <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
+                            <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
+                        </template>
+                        <EnvironmentTwoTone style="font-size:1.6rem;" />
+                        <span>{{ element.name }}</span>
+                    </a-popover>
+                    <a-popover v-else :title="element.name" trigger="hover">
+                        <template #content>
+                            <p>设备类型：{{ equipTypeList.find(item => item.id===element.type).type }}</p>
+                            <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
+                            <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
+                        </template>
+                        <EnvironmentTwoTone style="font-size:1.6rem;" />
+                        <span>{{ element.name }}</span>
+                    </a-popover>
+                </div>
+            </div>
         </div>
     </a-card>
     <a-modal v-model:open="open" title="请上传底图" @ok="modalOk">
@@ -72,6 +107,7 @@ import http from "../../../util/http";
 import draggable from 'vuedraggable'
 import Utils from "../../../util/utils";
 import _ from "lodash";
+import moment from "moment";
 
 interface EquipType {
     id: number;
@@ -122,6 +158,8 @@ export default {
             open: false,
             spotEditOpen: false,
             spotEditData: undefined,
+            popoverOpen: true,
+            triggerMode:0,  // 0悬浮；1直接显示
             /**设备点列表 */
             spotList: [
                 // {
@@ -183,6 +221,9 @@ export default {
             if (res1 && res1.data && res1.data.status === 200 && res1.data.data.length > 0) {
                 this.picFile = [res1.data.data[0]];
             }
+        },
+        parseTime(orgTime) {
+            return moment(orgTime).format("YYYY-MM-DD hh:mm:ss");
         },
         handleChange(info: UploadChangeParam) {
             if (info.file.status === 'done') {
@@ -316,7 +357,7 @@ export default {
 }
 
 .ant-card-body {
-    padding: 0;
+    padding: 1px;
 }
 
 .edit-row {
