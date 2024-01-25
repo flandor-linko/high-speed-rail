@@ -32,7 +32,7 @@
                 :style="{ 'background-image': 'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id : '') + ')' }"
                 class="drag-area" v-model="spotList" @end="dragEnd" item-key="id">
                 <template #item="{ element }">
-                    <div class="hot-item" @click="clickSpot(element)"
+                    <div class="hot-item" @click="clickEditSpot(element)"
                         :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }">
                         <FlagTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
@@ -43,20 +43,22 @@
                 :style="{ 'background-image': 'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id : '') + ')' }"
                 class="drag-area">
                 <div v-for="element in spotList" :key="element.id" class="hot-item"
-                    :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }">
+                    :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }"
+                    @click="clickSpot(element.id)">
 
-                    <a-popover v-if="equipType===-1" :title="element.name" trigger="hover">
+                    <a-popover v-if="equipType === -1" :title="element.name" trigger="hover">
                         <template #content>
-                            <p>设备类型：{{ equipTypeList.find(item => item.id===element.type).type }}</p>
+                            <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
                             <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
                             <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
                         </template>
                         <EnvironmentTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
                     </a-popover>
-                    <a-popover v-else-if="equipType===element.type" :title="element.name" trigger="hover" :open="popoverOpen">
+                    <a-popover v-else-if="equipType === element.type" :title="element.name" trigger="hover"
+                        :open="popoverOpen">
                         <template #content>
-                            <p>设备类型：{{ equipTypeList.find(item => item.id===element.type).type }}</p>
+                            <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
                             <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
                             <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
                         </template>
@@ -65,7 +67,7 @@
                     </a-popover>
                     <a-popover v-else :title="element.name" trigger="hover">
                         <template #content>
-                            <p>设备类型：{{ equipTypeList.find(item => item.id===element.type).type }}</p>
+                            <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
                             <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
                             <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
                         </template>
@@ -159,7 +161,7 @@ export default {
             spotEditOpen: false,
             spotEditData: undefined,
             popoverOpen: true,
-            triggerMode:0,  // 0悬浮；1直接显示
+            triggerMode: 0,  // 0悬浮；1直接显示
             /**设备点列表 */
             spotList: [
                 // {
@@ -182,13 +184,20 @@ export default {
         }
     },
     async created() {
-        this.stationId = this.$route.params.id ? this.$route.params.id : "0";
-        spotDefaultValue.stationId = this.stationId;
-        await this.getEquipTypeList();
-        await this.getPicFile();
-        await this.getSpotList();
+        this.getData();
+
+    },
+    async updated() {
+        this.getData();
     },
     methods: {
+        async getData() {
+            this.stationId = this.$route.params.id ? this.$route.params.id : "0";
+            spotDefaultValue.stationId = this.stationId;
+            await this.getEquipTypeList();
+            await this.getPicFile();
+            await this.getSpotList();
+        },
         async getEquipTypeList() {
             const res = await http.get("/demo/deviceType/list.json");
             if (res && res.data && res.data.status === 200) {
@@ -198,6 +207,7 @@ export default {
             };
         },
         async getSpotList() {
+            // this.
             const res = await http.get("/demo/device/list.json?stationId=" + this.stationId);
             if (res && res.data && res.data.status === 200) {
                 const spotList = res.data.data;
@@ -212,14 +222,21 @@ export default {
         async typeChange() {
 
         },
+        clickSpot(equipId) {
+            this.$router.push({ name: "equipInfo", params: { equipId: equipId } });
+        },
         modalOk() {
             this.open = false;
         },
         async getPicFile() {
             // deviceType   当前站点id ； type: "3"底图
             const res1 = await http.get("/demo/file/list.json", { params: { deviceType: this.stationId, type: "3" } });
-            if (res1 && res1.data && res1.data.status === 200 && res1.data.data.length > 0) {
-                this.picFile = [res1.data.data[0]];
+            if (res1 && res1.data && res1.data.status === 200) {
+                if (res1.data.data.length > 0) {
+                    this.picFile = [res1.data.data[0]];
+                } else {
+                    this.picFile = [];
+                }
             }
         },
         parseTime(orgTime) {
@@ -270,7 +287,7 @@ export default {
             this.spotEditData = newSpotData;
             this.spotEditOpen = true;
         },
-        clickSpot(spot) {
+        clickEditSpot(spot) {
             this.spotEditData = spot;
             this.spotEditOpen = true;
         },

@@ -15,7 +15,12 @@ const routes = [
             {
                 path: '/station/:id',
                 name: 'station',
-                component: () => import('./pages/view/station/Station.vue')
+                component: () => import('./pages/view/station/Station.vue'),
+            },
+            {
+                path: '/equipInfo/:equipId',
+                name: 'equipInfo',
+                component: () => import('./pages/view/equipInfo/EquipInfo.vue')
             },
         ]
     },

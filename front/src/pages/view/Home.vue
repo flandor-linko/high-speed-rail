@@ -1,5 +1,5 @@
 <template>
-    <h2 class="title">阜阳工务段高铁设备管理平台</h2>
+    <h2 class="title" @click="goHome">阜阳工务段高铁设备管理平台</h2>
     <a-row>
         <a-col>
             <span style="font-size: 1.2rem;font-weight: 600;">站点：</span>
@@ -32,7 +32,9 @@ export default {
     methods: {
         handleChange() {
             this.$router.push({name: "station", params: { id: this.site }} );
-            // this.site;
+        },
+        goHome(){
+            this.$router.push({name: "Home"});
         }
     }
 }
