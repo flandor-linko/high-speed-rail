@@ -46,6 +46,7 @@
                     :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }"
                     @click="clickSpot(element.id)">
 
+                    <!-- 与当前选中设备类型不同，悬浮显示；相同则直接显示 -->
                     <a-popover v-if="equipType === -1" :title="element.name" trigger="hover">
                         <template #content>
                             <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
@@ -87,11 +88,14 @@
             </a-button>
         </a-upload>
     </a-modal>
-    <a-modal v-model:open="spotEditOpen" title="请上传底图" @ok="spotEditModalOk">
+    <a-modal v-model:open="spotEditOpen" title="编辑设备热点信息" @ok="spotEditModalOk">
         <a-form-item label="设备名称" name="name">
             <a-input v-model:value="spotEditData.name" style="width: 120px" />
         </a-form-item>
-        <a-form-item label="设备类型" name="name">
+        <!-- <a-form-item label="坐标X值" name="xValue">
+            <a-input-number v-model:value="spotEditData.position.xIndex" :min="0" style="width: 120px" />
+        </a-form-item> -->
+        <a-form-item label="设备类型" name="type">
             <a-select v-model:value="spotEditData.type" style="width: 120px">
                 <a-select-option v-for="item in equipTypeList" :value="item.id" :key="item.id">{{ item.type
                 }}</a-select-option>
@@ -139,14 +143,15 @@ enum Mode {
     View
 }
 
-let spotDefaultValue = {
+const spotDefaultValue = {
     id: 0,
     type: -1,
     stationId: '-1',
     name: "设备",
     position: {
         x: 100,
-        y: 100
+        y: 100,
+        // xIndex: 0,
     },
 };
 
@@ -270,7 +275,8 @@ export default {
             const newPosY = evt.originalEvent.offsetY;
             const targetItem = this.spotList.find(item => item.id === targetId);
             if (targetItem) {
-                targetItem.position = { x: newPosX, y: newPosY };
+                targetItem.position.x = newPosX;
+                targetItem.position.y = newPosY;
             }
         },
         clickEdit() {
@@ -288,13 +294,14 @@ export default {
             this.spotEditOpen = true;
         },
         clickEditSpot(spot) {
+            // if (!spot.position.xIndex) {
+            //     spot.position.xIndex = spotDefaultValue.position.xIndex;
+            // }
             this.spotEditData = spot;
             this.spotEditOpen = true;
         },
         spotEditModalOk() {
             this.spotEditOpen = false;
-            // this.spotList = this.spotList.filter(item => item.id!== this.spotEditData.id);
-            // this.spotList.push(this.spotEditData);
         },
         async clickDel() {
             const id = this.spotEditData.id;
@@ -340,6 +347,7 @@ export default {
             const res = await Promise.all(requestList);
             if (res.every(item => item.data.status === 200)) {
                 message.success("操作成功");
+                this.getSpotList();
                 this.mode = Mode.View;
             } else {
                 message.error("操作失败");
