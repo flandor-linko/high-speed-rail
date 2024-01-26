@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { theme } from 'ant-design-vue';
 // import HelloWorld from './components/HelloWorld.vue';
 // import Equip from './pages/edit/Equip.vue';
 // import Home from './pages/view/Home.vue';
@@ -11,8 +12,13 @@
 </script>
 
 <template>
-  
+  <a-config-provider  locale="zh_CN"
+    :theme="{
+      algorithm: theme.defaultAlgorithm,
+    }"
+  >
   <router-view></router-view>
+  </a-config-provider>
   <!-- <div>
     <a href="https://vitejs.dev" target="_blank">
       <img src="/vite.svg" class="logo" alt="Vite logo" />
