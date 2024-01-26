@@ -8,7 +8,7 @@
             </a-radio-group>
         </a-col>
     </a-row>
-    <a-card title="站点设备信息图" style="width: 1027px" :bodyStyle="{ padding: '1px' }">
+    <a-card title="站点设备信息图" style="width: 1369px" :bodyStyle="{ padding: '1px' }">
         <template #extra>
             <div v-if="mode === Mode.View" class="edit-row">
                 <div @click="clickEdit">
@@ -372,7 +372,7 @@ export default {
 
 .drag-area {
     position: relative;
-    width: 1024px;
+    width: 1366px;
     height: 768px;
     background-size: contain;
 }
