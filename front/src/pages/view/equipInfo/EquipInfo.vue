@@ -2,7 +2,7 @@
     <h3>设备：{{ equipInfo?.name }}</h3>
 
     <a-row :gutter="40">
-        <a-col class="gutter-row" :span="12">
+        <a-col class="gutter-row" :span="8">
             <a-card title="设备简介">
                 <a-card title="文字介绍">
                     <h3>{{ equipTypeInfo.des }}</h3>
@@ -16,7 +16,27 @@
                 </a-card>
             </a-card>
         </a-col>
-        <a-col class="gutter-row" :span="12">
+        <a-col class="gutter-row" :span="8">
+            <a-card title="作业指导">
+                <a-card title="设计图">
+                    <a-upload v-model:file-list="designFile" :show-upload-list="{ showRemoveIcon: false }">
+                    </a-upload>
+                </a-card>
+                <a-card title="作业指导书">
+                    <a-upload v-model:file-list="workGuideFile" :show-upload-list="{ showRemoveIcon: false }">
+                    </a-upload>
+                </a-card>
+                <a-card title="技术指导">
+                    <a-upload v-model:file-list="skillGuideFile" :show-upload-list="{ showRemoveIcon: false }">
+                    </a-upload>
+                </a-card>
+                <a-card title="投稿">
+                    <a-upload v-model:file-list="contributeFile" :show-upload-list="{ showRemoveIcon: false }">
+                    </a-upload>
+                </a-card>
+            </a-card>
+        </a-col>
+        <a-col class="gutter-row" :span="8">
             <a-card title="分析">
                 <a-card title="静态文件">
                     <a-upload v-model:file-list="staticFileList" :max-count="50" :action="Utils.uploadUrl"
@@ -40,30 +60,33 @@
                     <a-button @click="viewStatic" :icon="h(SearchOutlined)">看图</a-button>
                 </a-card>
                 <a-card title="动态文件">
-                </a-card>
-            </a-card>
-        </a-col>
-        <a-col class="gutter-row" :span="12">
-            <a-card title="作业指导">
-                <a-card title="设计图">
-                    <a-upload v-model:file-list="designFile" :show-upload-list="{ showRemoveIcon: false }">
+                    <a-upload v-model:file-list="dynamicFileList" :max-count="10" :action="Utils.uploadUrl"
+                        @change="handleChange" :data="{ deviceId: equipId, limit: 10, type: '1' }">
+                        <a-button>
+                            <upload-outlined></upload-outlined>
+                            上传动态文件
+                        </a-button>
+                        <template #itemRender="{ file, actions }">
+                            <a-space>
+                                <a-checkbox v-model:checked="dynamicChecked[file.uid]"></a-checkbox>
+                                <a href="javascript:;" @click="actions.download">{{ file.name }} </a>
+                            </a-space>
+                        </template>
                     </a-upload>
-                </a-card>
-                <a-card title="作业指导书">
-                    <a-upload v-model:file-list="workGuideFile" :show-upload-list="{ showRemoveIcon: false }">
-                    </a-upload>
-                </a-card>
-                <a-card title="技术指导">
-                    <a-upload v-model:file-list="skillGuideFile" :show-upload-list="{ showRemoveIcon: false }">
-                    </a-upload>
-                </a-card>
-                <a-card title="投稿">
-                    <a-upload v-model:file-list="contributeFile" :show-upload-list="{ showRemoveIcon: false }">
-                    </a-upload>
+                    <a-button @click="viewDynamic" :icon="h(SearchOutlined)">看图</a-button>
                 </a-card>
             </a-card>
         </a-col>
     </a-row>
+
+    <a-modal v-model:open="chartModalOpen" title="数据信息" width="100%" wrap-class-name="full-modal"
+        @ok="chartModalOpen = false">
+        <div style="width:1366px;height:768px" ref="chart" id="chart"></div>
+    </a-modal>
+    <a-modal v-model:open="dynamicChartModalOpen" title="数据信息" width="100%" wrap-class-name="full-modal"
+        @ok="dynamicChartModalOpen = false">
+        <div style="width:1366px;height:768px" ref="chart" id="chart"></div>
+    </a-modal>
 </template>
 
 
@@ -71,6 +94,7 @@
 import { h } from 'vue';
 import { SearchOutlined } from '@ant-design/icons-vue';
 import _ from "lodash";
+import * as echarts from 'echarts';
 import { Modal, UploadChangeParam, UploadProps, message } from 'ant-design-vue';
 import http from "../../../util/http";
 import Utils from "../../../util/utils";
@@ -78,6 +102,8 @@ import Utils from "../../../util/utils";
 export default {
     data() {
         return {
+            chartModalOpen: false,
+            dynamicChartModalOpen: false,
             h: h,
             SearchOutlined: SearchOutlined,
             videoFileList: ([]) as UploadProps['fileList'],
@@ -90,6 +116,7 @@ export default {
             dynamicFileList: ([]) as UploadProps['fileList'],
             /**静态文件选中情况 */
             staticChecked: {},
+            dynamicChecked: {},
             equipTypeList: [],
             equipTypeInfo: -1,
             equipId: -1,
@@ -148,6 +175,9 @@ export default {
                 });
                 const dynamicInfo = res[7].data.data;
                 this.dynamicFileList = (dynamicInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.dynamicFileList.forEach(dynamicFile => {
+                    this.dynamicChecked[dynamicFile.uid] = false;
+                });
             }
         },
         async getEquipTypeList() {
@@ -156,13 +186,210 @@ export default {
                 this.equipTypeList = res.data.data;
             }
         },
-        async viewStatic() {
+        async viewDynamic() {
+            const dynamicFileList = this.dynamicFileList.filter(dynamicFile => {
+                return this.dynamicChecked[dynamicFile.uid];
+            });
+            if (dynamicFileList.length > 1) {
+                message.error(`选择动态文件数目不能大于1`);
+                return;
+            } else if (dynamicFileList.length < 1 ){
+                message.error(`请选择动态文件`);
+                return;
+            }
             const modal = Modal.info({
                 title: '提示',
                 content: `数据加载中`,
             });
+            const dynamicFileIds = dynamicFileList.map(dynamicFile => {
+                return dynamicFile.uid;
+            });
+            const resList = [];
+            for (let i = 0; i < dynamicFileIds.length; i++) {
+                const res = http.get("/demo/file/data.json", { params: { id: dynamicFileIds[i], start: 668, limit: 200 } });
+                resList.push(res);
+            }
+            const res = await Promise.all(resList);
+            if (res && res.every(item => item.data.status === 200)) {
+                modal.update({ type: "success", content: `数据加载成功` });
+                const dataList = res.map(res => { return res.data.data; });
+                setTimeout(() => {
+                    modal.destroy();
+                    this.initDynamicChart(dataList);
+                }, 1000);
+            } else {
+                modal.update({ type: "error", content: `文件加载失败` });
+            }
+        },
+        async initDynamicChart(dataList) {
+            this.dynamicChartModalOpen = true;
+            const xData = dataList[0].map(item => { return item.realMileage; });
+            const dataRes = dataList[0];
+            // 左高低 —— 2
+            const leftHigh10 = [];
+            // 右高低10 —— 3
+            const righHigh10 = [];
+            // 左轨向10 —— 4
+            const left10 = [];
+            // 右轨向10 —— 5
+            const right10 = [];
+            dataRes.forEach(dataItem => {
+                const dataArray = JSON.parse(dataItem.data);
+                const x = dataItem.realMileage;
+                leftHigh10.push([x, dataArray[2]]);
+                righHigh10.push([x, dataArray[3]]);
+                left10.push([x, dataArray[4]]);
+                right10.push([x, dataArray[5]]);
+            });
+            await this.$nextTick();
+            let myChart = echarts.init(document.getElementById('chart'));
+            myChart.setOption({
+                title: [
+                    { text: '左高低', left: 'center', },
+                    { text: '右高低', left: 'center', top: '25%', },
+                    { text: '左轨向', left: 'center', top: '50%', },
+                    { text: '右轨向', left: 'center', top: '75%', },
+                ],
+                dataZoom: [
+                    {
+                        type: 'inside',
+                    },
+                    {
+                        type: 'inside',
+                        xAxisIndex: 1,
+                        yAxisIndex: 1
+                    },
+                    {
+                        type: 'inside',
+                        xAxisIndex: 2,
+                        yAxisIndex: 2
+                    },
+                    {
+                        type: 'inside',
+                        xAxisIndex: 3,
+                        yAxisIndex: 3
+                    },
+                ],
+                xAxis: [
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                    },
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                        gridIndex: 1
+                    },
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                        gridIndex: 2
+                    },
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                        gridIndex: 3
+                    },
+                ],
+                tooltip: {
+                    trigger: 'axis'
+                },
+                yAxis: [
+                    {
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                    {
+                        gridIndex: 1,
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                    {
+                        gridIndex: 2,
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                    {
+                        gridIndex: 3,
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                ],
+                grid: [
+                    {
+                        bottom: '80%',
+                        show: false,
+                    },
+                    {
+                        top: '25%',
+                        height: '20%'
+                    },
+                    {
+                        top: '50%',
+                        height: '20%'
+                    },
+                    {
+                        top: '75%',
+                        height: '20%'
+                    }
+                ],
+                series: [
+                    {
+                        name: '左高低',
+                        type: 'line',
+                        smooth: true,
+                        data: leftHigh10,
+                    },
+                    {
+                        name: '右高低',
+                        type: 'line',
+                        smooth: true,
+                        data: righHigh10,
+                        xAxisIndex: 1,
+                        yAxisIndex: 1
+                    },
+                    {
+                        name: '左轨向',
+                        type: 'line',
+                        smooth: true,
+                        data: left10,
+                        xAxisIndex: 2,
+                        yAxisIndex: 2
+                    },
+                    {
+                        name: '右轨向',
+                        type: 'line',
+                        smooth: true,
+                        data: right10,
+                        xAxisIndex: 3,
+                        yAxisIndex: 3
+                    },
+                ]
+            });
+        },
+        async viewStatic() {
             const staticFileList = this.staticFileList.filter(staticFile => {
                 return this.staticChecked[staticFile.uid];
+            });
+            const fileNameList = staticFileList.map(file => file.name);
+            if (staticFileList.length > 2) {
+                message.error(`选择静态文件数目不能大于2`);
+                return;
+            } else if (staticFileList.length < 1 ){
+                message.error(`请选择静态文件`);
+                return;
+            }
+            const modal = Modal.info({
+                title: '提示',
+                content: `数据加载中`,
             });
             const staticFileIds = staticFileList.map(staticFile => {
                 return staticFile.uid;
@@ -174,12 +401,282 @@ export default {
             }
             const res = await Promise.all(resList);
             if (res && res.every(item => item.data.status === 200)) {
-                modal.update({type:"success",content: `数据加载成功`});
+                modal.update({ type: "success", content: `数据加载成功` });
                 const dataList = res.map(res => { return res.data.data; });
-                setTimeout(()=>{modal.destroy();},1000);
+                setTimeout(() => {
+                    modal.destroy();
+                    this.initStaticChart(dataList,fileNameList);
+                }, 1000);
             } else {
-                modal.update({type:"error",content: `文件加载失败`});
+                modal.update({ type: "error", content: `文件加载失败` });
             }
+        },
+        async initStaticChart(dataList,fileNameList) {
+            this.chartModalOpen = true;
+            // const xData = dataList[0].map(item => { return item.realMileage; });
+            const dataRes = dataList[0];
+            // 左轨向10 —— 3
+            const left10 = [];
+            // 右轨向10 —— 4
+            const right10 = [];
+            // 左轨向20 —— 5
+            const left20 = [];
+            // 右轨向20 —— 6
+            const right20 = [];
+            // 轨距 —— 7
+            const guiju = [];
+            // 左高低10 —— 8
+            const leftHigh10 = [];
+            // 右高低10 —— 9
+            const righHigh10 = [];
+            // 左高低20 —— 10
+            const leftHigh20 = [];
+            // 右高低20 —— 11
+            const righHigh20 = [];
+            // 超高 —— 12
+            const chaogao = [];
+            dataRes.forEach(dataItem => {
+                const dataArray = JSON.parse(dataItem.data);
+                const x = dataItem.realMileage;
+                left10.push([x, dataArray[3]]);
+                right10.push([x, dataArray[4]]);
+                // left20.push([x, dataArray[5]]);
+                // right20.push([x, dataArray[6]]);
+                // guiju.push([x, dataArray[7]]);
+                leftHigh10.push([x, dataArray[8]]);
+                righHigh10.push([x, dataArray[9]]);
+                // leftHigh20.push([x, dataArray[10]]);
+                // righHigh20.push([x, dataArray[11]]);
+                // chaogao.push([x, dataArray[12]]);
+            });
+            const series2 = [];
+            if (dataList.length > 1) {
+                const dataRes2 = dataList[1];
+                // 左轨向10 —— 3
+                const left10_2 = [];
+                // 右轨向10 —— 4
+                const right10_2 = [];
+                // 左高低10 —— 8
+                const leftHigh10_2 = [];
+                // 右高低10 —— 9
+                const righHigh10_2 = [];
+                dataRes2.forEach(dataItem => {
+                    const dataArray = JSON.parse(dataItem.data);
+                    const x = dataItem.realMileage;
+                    left10_2.push([x, dataArray[3]]);
+                    right10_2.push([x, dataArray[4]]);
+                    leftHigh10_2.push([x, dataArray[8]]);
+                    righHigh10_2.push([x, dataArray[9]]);
+                });
+                series2.push({
+                    name: '左轨向10' + fileNameList[1],
+                    type: 'line',
+                    smooth: true,
+                    data: left10_2,
+                    xAxisIndex: 0,
+                    yAxisIndex: 0
+                }, {
+                    name: '右轨向10' + fileNameList[1],
+                    type: 'line',
+                    smooth: true,
+                    data: right10_2,
+                    xAxisIndex: 1,
+                    yAxisIndex: 1
+                }, {
+                    name: '左高低10' + fileNameList[1],
+                    type: 'line',
+                    smooth: true,
+                    data: leftHigh10_2,
+                    xAxisIndex: 2,
+                    yAxisIndex: 2
+                }, {
+                    name: '右高低10' + fileNameList[1],
+                    type: 'line',
+                    smooth: true,
+                    data: righHigh10_2,
+                    xAxisIndex: 3,
+                    yAxisIndex: 3
+                });
+            }
+
+            // 防止获取不到dom元素
+            await this.$nextTick();
+            let myChart = echarts.init(document.getElementById('chart'));
+            // 绘制图表
+            myChart.setOption({
+                title: [
+                    { text: '左轨向10', left: 'center', },
+                    { text: '右轨向10', left: 'center', top: '25%', },
+                    { text: '左高低10', left: 'center', top: '50%', },
+                    { text: '右高低10', left: 'center', top: '75%', },
+                ],
+                // legend: [
+                //     { show: true },
+                //     { show: true },
+                //     { show: true },
+                //     { show: true },
+                // ],
+                dataZoom: [
+                    {
+                        type: 'inside',
+                    },
+                    {
+                        type: 'inside',
+                        xAxisIndex: 1,
+                        yAxisIndex: 1
+                    },
+                    {
+                        type: 'inside',
+                        xAxisIndex: 2,
+                        yAxisIndex: 2
+                    },
+                    {
+                        type: 'inside',
+                        xAxisIndex: 3,
+                        yAxisIndex: 3
+                    },
+                ],
+                xAxis: [
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                    },
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                        gridIndex: 1
+                    },
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                        gridIndex: 2
+                    },
+                    {
+                        name: "里程",
+                        type: "value",
+                        scale: true,
+                        gridIndex: 3
+                    },
+                ],
+                tooltip: {
+                    trigger: 'axis'
+                },
+                yAxis: [
+                    {
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                    {
+                        gridIndex: 1,
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                    {
+                        gridIndex: 2,
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                    {
+                        gridIndex: 3,
+                        splitLine: {     //网格线
+                            "show": false
+                        }
+                    },
+                ],
+                grid: [
+                    {
+                        bottom: '80%',
+                        show: false,
+                    },
+                    {
+                        top: '25%',
+                        height: '20%'
+                    },
+                    {
+                        top: '50%',
+                        height: '20%'
+                    },
+                    {
+                        top: '75%',
+                        height: '20%'
+                    }
+                ],
+                series: [
+                    {
+                        name: '左轨向10' + fileNameList[0],
+                        type: 'line',
+                        smooth: true,
+                        data: left10,
+                    },
+                    {
+                        name: '右轨向10' + fileNameList[0],
+                        type: 'line',
+                        smooth: true,
+                        data: right10,
+                        xAxisIndex: 1,
+                        yAxisIndex: 1
+                    },
+                    // {
+                    //     name: '左轨向20',
+                    //     type: 'line',
+                    //     smooth: true,
+                    //     data: left20
+                    // },
+                    // {
+                    //     name: '右轨向20',
+                    //     type: 'line',
+                    //     smooth: true,
+                    //     data: right20
+                    // },
+                    // {
+                    //     name: '轨距',
+                    //     type: 'line',
+                    //     smooth: true,
+                    //     data: guiju
+                    // },
+                    {
+                        name: '左高低10' + fileNameList[0],
+                        type: 'line',
+                        smooth: true,
+                        data: leftHigh10,
+                        xAxisIndex: 2,
+                        yAxisIndex: 2
+                    },
+                    {
+                        name: '右高低10' + fileNameList[0],
+                        type: 'line',
+                        smooth: true,
+                        data: righHigh10,
+                        xAxisIndex: 3,
+                        yAxisIndex: 3
+                    },
+                    // {
+                    //     name: '左高低20',
+                    //     type: 'line',
+                    //     smooth: true,
+                    //     data: leftHigh20
+                    // },
+                    // {
+                    //     name: '右高低20',
+                    //     type: 'line',
+                    //     smooth: true,
+                    //     data: righHigh20
+                    // },
+                    // {
+                    //     name: '超高',
+                    //     type: 'line',
+                    //     smooth: true,
+                    //     data: chaogao
+                    // },
+                    ...series2
+                ]
+            });
         },
         async getEquipInfo() {
             const res = await http.get("/demo/device/list.json?id=" + this.equipId);
@@ -204,4 +701,41 @@ export default {
 
 </script>
 
-<style></style>
+<style>
+.full-modal .ant-modal {
+    max-width: 100%;
+    top: 0;
+    padding-bottom: 0;
+    margin: 0;
+}
+
+
+.full-modal .ant-modal-content {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh);
+}
+
+.full-modal .ant-modal-body {
+    flex: 1;
+}
+
+/* .full-modal {
+    .ant-modal {
+        max-width: 100%;
+        top: 0;
+        padding-bottom: 0;
+        margin: 0;
+    }
+
+    .ant-modal-content {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh);
+    }
+
+    .ant-modal-body {
+        flex: 1;
+    }
+} */
+</style>
