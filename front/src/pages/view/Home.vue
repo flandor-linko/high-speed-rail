@@ -1,5 +1,10 @@
 <template>
-    <h2 class="title" @click="goHome">阜阳工务段设备管理平台</h2>
+    <a-row>
+        <a-col style="display: flex;">
+            <a-image :width="50" src="/logo copy.jpg" :preview="false" />
+            <h2 class="title" @click="goHome">阜阳工务段设备管理平台</h2>
+        </a-col>
+    </a-row>
     <a-row>
         <a-col>
             <span style="font-size: 1.2rem;font-weight: 600;">站点：</span>
@@ -27,14 +32,14 @@ export default {
         }
     },
     async created() {
-        this.site = this.$route.params.id?this.$route.params.id:"0";
+        this.site = this.$route.params.id ? this.$route.params.id : "0";
     },
     methods: {
         handleChange() {
-            this.$router.push({name: "station", params: { id: this.site }} );
+            this.$router.replace({ name: "station", params: { id: this.site } });
         },
-        goHome(){
-            this.$router.push({name: "Home"});
+        goHome() {
+            this.$router.replace({ name: "Home" });
         }
     }
 }
@@ -46,6 +51,7 @@ export default {
 <style scoped>
 .title {
     font-weight: 800;
+    font-size: xx-large;
 }
 
 .menu {
