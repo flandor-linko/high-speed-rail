@@ -49,7 +49,7 @@
         <a-col class="gutter-row" :span="8">
             <a-card title="分析" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
                 <a-card title="静态文件">
-                    <a-upload v-model:file-list="staticFileList" :max-count="50" :action="Utils.uploadUrl"
+                    <a-upload class="limit-height" v-model:file-list="staticFileList" :max-count="50" :action="Utils.uploadUrl"
                         @change="handleChange" :data="{ deviceId: equipId, limit: 50, type: staticFileType }">
                         <a-button @click="staticFileType = '0-0'">
                             <upload-outlined></upload-outlined>
@@ -71,7 +71,7 @@
                     <a-button @click="viewStatic" :icon="h(SearchOutlined)">看图</a-button>
                 </a-card>
                 <a-card title="动态文件">
-                    <a-upload v-model:file-list="dynamicFileList" :max-count="10" :action="Utils.uploadUrl"
+                    <a-upload class="limit-height" v-model:file-list="dynamicFileList" :max-count="10" :action="Utils.uploadUrl"
                         @change="handleChange" :data="{ deviceId: equipId, limit: 10, type: '1' }">
                         <a-button>
                             <upload-outlined></upload-outlined>
@@ -748,4 +748,10 @@ export default {
 .full-modal .ant-modal-body {
     flex: 1;
 }
+
+.limit-height .ant-upload-list {
+    height: 6rem;
+    overflow: auto;
+}
+
 </style>
