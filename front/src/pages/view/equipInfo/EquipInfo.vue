@@ -3,7 +3,7 @@
 
     <a-row :gutter="40">
         <a-col class="gutter-row" :span="8">
-            <a-card title="设备简介" :bodyStyle="{ height: '45rem',overflow:'auto' }">
+            <a-card title="设备简介" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
                 <a-card title="文字介绍">
                     <h3>{{ equipTypeInfo.des }}</h3>
                 </a-card>
@@ -21,7 +21,7 @@
             </a-card>
         </a-col>
         <a-col class="gutter-row" :span="8">
-            <a-card title="作业指导" :bodyStyle="{ height: '45rem',overflow:'auto' }">
+            <a-card title="作业指导" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
                 <a-card title="设计图">
                     <a-upload v-model:file-list="designFile" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload>
@@ -35,13 +35,19 @@
                     </a-upload>
                 </a-card>
                 <a-card title="投稿">
-                    <a-upload v-model:file-list="contributeFile" :show-upload-list="{ showRemoveIcon: false }">
+                    <a-upload v-model:file-list="contributeFile" :show-upload-list="{ showRemoveIcon: false }"
+                        :max-count="10" @change="handleChange"
+                        :data="{ deviceType: equipInfo?.type, limit: 10, type: '2-5' }" :action="Utils.uploadUrl">
+                        <a-button>
+                            <upload-outlined></upload-outlined>
+                            上传投稿文件
+                        </a-button>
                     </a-upload>
                 </a-card>
             </a-card>
         </a-col>
         <a-col class="gutter-row" :span="8">
-            <a-card title="分析" :bodyStyle="{ height: '45rem',overflow:'auto' }">
+            <a-card title="分析" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
                 <a-card title="静态文件">
                     <a-upload v-model:file-list="staticFileList" :max-count="50" :action="Utils.uploadUrl"
                         @change="handleChange" :data="{ deviceId: equipId, limit: 50, type: staticFileType }">
