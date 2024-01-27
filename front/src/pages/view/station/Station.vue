@@ -194,6 +194,7 @@ export default {
     },
     async updated() {
         this.getData();
+        this.equipType = -1;
     },
     methods: {
         async getData() {
