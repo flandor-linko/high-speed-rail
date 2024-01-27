@@ -190,6 +190,9 @@ export default {
     },
     async created() {
         this.getData();
+        this.$router.afterEach((to, from) => {
+            this.getData();
+        })
 
     },
     // async updated() {
