@@ -220,7 +220,9 @@ export default {
             });
             const resList = [];
             for (let i = 0; i < dynamicFileIds.length; i++) {
-                const res = http.get("/demo/file/data.json", { params: { id: dynamicFileIds[i], start: 668, limit: 200 } });
+                const xIndex = JSON.parse(this.equipInfo.position).xIndex;
+                const start = xIndex - 0.2;
+                const res = http.get("/demo/file/data.json", { params: { id: dynamicFileIds[i], start: start, limit: 200 } });
                 resList.push(res);
             }
             const res = await Promise.all(resList);
