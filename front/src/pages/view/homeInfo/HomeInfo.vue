@@ -4,7 +4,7 @@
             <a-card :title="data[0].title">
                 <a-list size="small" bordered :data-source="data[0].list">
                     <template #renderItem="{ item }">
-                        <a-list-item @click="clickEquip(item.id)">{{ item.info }}</a-list-item>
+                        <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{ getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{ item.name }}</span> 应在 <a-tag color="blue">{{ formatTime(item.nextFixTime) }}</a-tag> 检查</a-list-item>
                     </template>
                 </a-list>
             </a-card>
@@ -13,7 +13,7 @@
             <a-card :title="data[1].title">
                 <a-list size="small" bordered :data-source="data[1].list">
                     <template #renderItem="{ item }">
-                        <a-list-item @click="clickEquip(item.id)">{{ item.info }}</a-list-item>
+                        <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{ getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{ item.name }}</span> 已在 <a-tag color="blue">{{ formatTime(item.lastFixTime) }}</a-tag> 养修</a-list-item>
                     </template>
                 </a-list>
             </a-card>
@@ -62,11 +62,11 @@ export default {
         async getRemainInfo() {
             const res0 = await http.get("/demo/device/checkCycleReminder.json");
             if (res0 && res0.data && res0.data.status === 200) {
-                this.data[0].list = res0.data.data.map(info => {return {id: info.id,info:`[${this.getStationName(info.stationId)}] ${info.name}应在${moment(info.nextFixTime).format("YYYY-MM-DD")}检查`}});
+                this.data[0].list = res0.data.data;
             }
             const res1 = await http.get("/demo/device/recentMaintenanceReminder.json");
             if (res1 && res1.data && res1.data.status === 200) {
-                this.data[1].list = res0.data.data.map(info =>  {return {id: info.id,info:`[${this.getStationName(info.stationId)}] ${info.name}已在${moment(info.lastFixTime).format("YYYY-MM-DD")}养修`}});
+                this.data[1].list = res0.data.data;
             }
         },
         getStationName(stationId) {
@@ -77,6 +77,18 @@ export default {
                 }
             });
             return statioName;
+        },
+        getStationColor(stationId){
+            let color = Utils.stationList[0].color;
+            // Utils.stationList.forEach(item => {
+            //     if (+item.stationId === stationId) {
+            //         color = item.color;
+            //     }
+            // });
+            return color;
+        },
+        formatTime(timeStr:string) {
+            return moment(timeStr).format("YYYY-MM-DD");
         },
         clickEquip(id) {
             this.$router.push({ name: "equipInfo", params: { equipId: id } });
