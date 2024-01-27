@@ -1,8 +1,8 @@
 const Utils = {
     /**下载文件接口 */
-    filePrefix: '/demo/file/download.json?id=',
+    filePrefix: `${import.meta.env.PROD ? '' :'/demo'}/file/download.json?id=`,
     /**上传文件接口 */
-    uploadUrl: '/demo/file/upload.json',
+    uploadUrl: `${import.meta.env.PROD ? '' :'/demo'}/file/upload.json`,
     /**站点列表 */
     stationList: [
         { stationId: '1', name: "线路所", color: "#2db7f5" },
