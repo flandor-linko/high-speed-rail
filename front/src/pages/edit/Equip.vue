@@ -145,6 +145,7 @@ import type { UploadChangeParam, UploadProps } from 'ant-design-vue';
 import { message } from 'ant-design-vue';
 import http from "../../util/http";
 import Utils from "../../util/utils";
+import moment from "moment";
 
 interface EquipType {
     id: number;
@@ -228,15 +229,15 @@ export default {
             const res = await Promise.all([res1, res2, res3, res4, res5]);
             if (res) {
                 const videoInfo = res[0].data.data;
-                this.videoFile = (videoInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.videoFile = (videoInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const designInfo = res[1].data.data;
-                this.designFile = (designInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.designFile = (designInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const workGuideInfo = res[2].data.data;
-                this.workGuideFile = (workGuideInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.workGuideFile = (workGuideInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const skillGuideInfo = res[3].data.data;
-                this.skillGuideFile = (skillGuideInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.skillGuideFile = (skillGuideInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const contributeInfo = res[4].data.data;
-                this.contributeFile = (contributeInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.contributeFile = (contributeInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
             }
         },
         handleChange(info: UploadChangeParam) {
@@ -246,6 +247,9 @@ export default {
             } else if (info.file.status === 'error') {
                 message.error(`${info.file.name} 文件上传失败`);
             }
+        },
+        formatTime(str){
+            return moment(str).zone("+08:00").format("YYYY-MM-DD HH:mm:ss");
         },
         async handleRemove(file) {
             const res = await http.get("/demo/file/delete.json", {

@@ -108,6 +108,7 @@ import * as echarts from 'echarts';
 import { Modal, UploadChangeParam, UploadProps, message } from 'ant-design-vue';
 import http from "../../../util/http";
 import Utils from "../../../util/utils";
+import moment from 'moment';
 
 export default {
     data() {
@@ -168,23 +169,23 @@ export default {
                 const videoInfo = res[0].data.data;
                 this.videoFileList = (videoInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const designInfo = res[1].data.data;
-                this.designFile = (designInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.designFile = (designInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const workGuideInfo = res[2].data.data;
-                this.workGuideFile = (workGuideInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.workGuideFile = (workGuideInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const skillGuideInfo = res[3].data.data;
-                this.skillGuideFile = (skillGuideInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.skillGuideFile = (skillGuideInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const contributeInfo = res[4].data.data;
-                this.contributeFile = (contributeInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.contributeFile = (contributeInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const staticCheckInfo = res[5].data.data;
-                const staticCheckFile = (staticCheckInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id, type: "0-0" }; }));
+                const staticCheckFile = (staticCheckInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id, type: "0-0" }; }));
                 const staticFixInfo = res[6].data.data;
-                const staticFixFile = (staticFixInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id, type: "0-1" }; }));
+                const staticFixFile = (staticFixInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id, type: "0-1" }; }));
                 this.staticFileList = [...staticCheckFile, ...staticFixFile].sort((a, b) => a.uid - b.uid);
                 this.staticFileList.forEach(staticFile => {
                     this.staticChecked[staticFile.uid] = false;
                 });
                 const dynamicInfo = res[7].data.data;
-                this.dynamicFileList = (dynamicInfo.map(info => { return { name: info.name, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                this.dynamicFileList = (dynamicInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 this.dynamicFileList.forEach(dynamicFile => {
                     this.dynamicChecked[dynamicFile.uid] = false;
                 });
@@ -195,6 +196,9 @@ export default {
             if (res && res.data && res.data.status === 200) {
                 this.equipTypeList = res.data.data;
             }
+        },
+        formatTime(str){
+            return moment(str).zone("+08:00").format("YYYY-MM-DD HH:mm:ss");
         },
         async viewDynamic() {
             const dynamicFileList = this.dynamicFileList.filter(dynamicFile => {

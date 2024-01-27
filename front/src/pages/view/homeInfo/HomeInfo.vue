@@ -88,7 +88,7 @@ export default {
             return color;
         },
         formatTime(timeStr:string) {
-            return moment(timeStr).format("YYYY-MM-DD");
+            return moment(timeStr).zone("+08:00").format("YYYY-MM-DD");
         },
         clickEquip(id) {
             this.$router.push({ name: "equipInfo", params: { equipId: id } });

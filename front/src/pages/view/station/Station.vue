@@ -244,7 +244,7 @@ export default {
             }
         },
         parseTime(orgTime) {
-            return moment(orgTime).format("YYYY-MM-DD");
+            return moment(orgTime).zone("+08:00").format("YYYY-MM-DD");
         },
         handleChange(info: UploadChangeParam) {
             if (info.file.status === 'done') {
