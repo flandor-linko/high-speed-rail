@@ -62,8 +62,9 @@
                         <template #itemRender="{ file, actions }">
                             <a-space>
                                 <a-checkbox v-model:checked="staticChecked[file.uid]"></a-checkbox>
-                                <a href="javascript:;" @click="actions.download">{{ file.name }} [{{ file.type === "0-0" ?
-                                    "检查" : "养修" }}]</a>
+                                <a href="javascript:;" @click="actions.download">{{ file.name }}</a>
+                                <a-tag v-if="file.type === '0-0'" color="blue">检查</a-tag>
+                                <a-tag v-else color="green">养修</a-tag>
                             </a-space>
                         </template>
                     </a-upload>
