@@ -66,7 +66,7 @@
                         <EnvironmentTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
                     </a-popover>
-                    <a-popover v-else :title="element.name" trigger="hover">
+                    <!-- <a-popover v-else :title="element.name" trigger="hover">
                         <template #content>
                             <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
                             <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
@@ -74,7 +74,7 @@
                         </template>
                         <EnvironmentTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
-                    </a-popover>
+                    </a-popover> -->
                 </div>
             </div>
         </div>
@@ -225,7 +225,6 @@ export default {
             }
         },
         async typeChange() {
-
         },
         clickSpot(equipId) {
             this.$router.push({ name: "equipInfo", params: { equipId: equipId } });
