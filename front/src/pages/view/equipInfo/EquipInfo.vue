@@ -194,7 +194,7 @@ export default {
             if (dynamicFileList.length > 1) {
                 message.error(`选择动态文件数目不能大于1`);
                 return;
-            } else if (dynamicFileList.length < 1 ){
+            } else if (dynamicFileList.length < 1) {
                 message.error(`请选择动态文件`);
                 return;
             }
@@ -253,22 +253,8 @@ export default {
                 ],
                 dataZoom: [
                     {
-                        type: 'inside',
-                    },
-                    {
-                        type: 'inside',
-                        xAxisIndex: 1,
-                        yAxisIndex: 1
-                    },
-                    {
-                        type: 'inside',
-                        xAxisIndex: 2,
-                        yAxisIndex: 2
-                    },
-                    {
-                        type: 'inside',
-                        xAxisIndex: 3,
-                        yAxisIndex: 3
+                        type: 'slider',
+                        xAxisIndex: [0, 1, 2, 3]
                     },
                 ],
                 xAxis: [
@@ -384,7 +370,7 @@ export default {
             if (staticFileList.length > 2) {
                 message.error(`选择静态文件数目不能大于2`);
                 return;
-            } else if (staticFileList.length < 1 ){
+            } else if (staticFileList.length < 1) {
                 message.error(`请选择静态文件`);
                 return;
             }
@@ -406,13 +392,13 @@ export default {
                 const dataList = res.map(res => { return res.data.data; });
                 setTimeout(() => {
                     modal.destroy();
-                    this.initStaticChart(dataList,fileNameList);
+                    this.initStaticChart(dataList, fileNameList);
                 }, 1000);
             } else {
                 modal.update({ type: "error", content: `文件加载失败` });
             }
         },
-        async initStaticChart(dataList,fileNameList) {
+        async initStaticChart(dataList, fileNameList) {
             this.chartModalOpen = true;
             // const xData = dataList[0].map(item => { return item.realMileage; });
             const dataRes = dataList[0];
@@ -519,22 +505,8 @@ export default {
                 // ],
                 dataZoom: [
                     {
-                        type: 'inside',
-                    },
-                    {
-                        type: 'inside',
-                        xAxisIndex: 1,
-                        yAxisIndex: 1
-                    },
-                    {
-                        type: 'inside',
-                        xAxisIndex: 2,
-                        yAxisIndex: 2
-                    },
-                    {
-                        type: 'inside',
-                        xAxisIndex: 3,
-                        yAxisIndex: 3
+                        type: 'slider',
+                        xAxisIndex: [0, 1, 2, 3]
                     },
                 ],
                 xAxis: [
@@ -720,23 +692,4 @@ export default {
 .full-modal .ant-modal-body {
     flex: 1;
 }
-
-/* .full-modal {
-    .ant-modal {
-        max-width: 100%;
-        top: 0;
-        padding-bottom: 0;
-        margin: 0;
-    }
-
-    .ant-modal-content {
-        display: flex;
-        flex-direction: column;
-        height: calc(100vh);
-    }
-
-    .ant-modal-body {
-        flex: 1;
-    }
-} */
 </style>
