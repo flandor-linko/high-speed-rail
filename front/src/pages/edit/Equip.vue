@@ -48,7 +48,7 @@
                 <a-col class="gutter-row" :span="12">
                     <a-card title="设备简介" :bordered="false">
                         <a-form-item label="● 文字介绍" name="des">
-                            <a-textarea :rows="2" placeholder="请输入文字介绍" :maxlength="12" v-model:value="formState.des" />
+                            <a-textarea :rows="2" placeholder="请输入文字介绍" :maxlength="400" v-model:value="formState.des" />
                         </a-form-item>
                         <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">添加参数</a-button>
                         <a-table bordered :data-source="dataSource" :columns="columns">
