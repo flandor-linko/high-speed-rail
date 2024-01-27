@@ -4,12 +4,6 @@
     <a-row :gutter="40">
         <a-col class="gutter-row" :span="8">
             <a-card title="设备简介" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
-                <a-card title="文字介绍">
-                    <h3>{{ equipTypeInfo.des }}</h3>
-                </a-card>
-                <a-card title="常用参数">
-                    <a-table bordered :data-source="equipTypeInfo.paramList" :columns="columns"></a-table>
-                </a-card>
                 <a-card title="视频">
                     <video style="width: 100%;" v-if="videoFileList?.length > 0" controls preload="auto">
                         <source :src="videoFileList[0].url">
@@ -17,6 +11,12 @@
                     </video>
                     <!-- <a-upload v-model:file-list="videoFileList" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload> -->
+                </a-card>
+                <a-card title="文字介绍">
+                    <h3>{{ equipTypeInfo.des }}</h3>
+                </a-card>
+                <a-card title="常用参数">
+                    <a-table bordered :data-source="equipTypeInfo.paramList" :columns="columns"></a-table>
                 </a-card>
             </a-card>
         </a-col>
