@@ -23,7 +23,8 @@ export default defineConfig({
     //代理配置
     proxy: {
       "/demo": {
-        target: "http://124.221.249.140:8080/", // api接口代理,
+        target: "http://121.40.108.95:8080/", // api接口代理,
+        // target: "http://124.221.249.140:8080/", // api接口代理,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/demo/, ""),
       },

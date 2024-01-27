@@ -3,7 +3,7 @@
 
     <a-row :gutter="40">
         <a-col class="gutter-row" :span="8">
-            <a-card title="设备简介">
+            <a-card title="设备简介" :bodyStyle="{ height: '45rem',overflow:'auto' }">
                 <a-card title="文字介绍">
                     <h3>{{ equipTypeInfo.des }}</h3>
                 </a-card>
@@ -15,13 +15,13 @@
                         <source :src="videoFileList[0].url">
                         </source>
                     </video>
-                    <a-upload v-model:file-list="videoFileList" :show-upload-list="{ showRemoveIcon: false }">
-                    </a-upload>
+                    <!-- <a-upload v-model:file-list="videoFileList" :show-upload-list="{ showRemoveIcon: false }">
+                    </a-upload> -->
                 </a-card>
             </a-card>
         </a-col>
         <a-col class="gutter-row" :span="8">
-            <a-card title="作业指导">
+            <a-card title="作业指导" :bodyStyle="{ height: '45rem',overflow:'auto' }">
                 <a-card title="设计图">
                     <a-upload v-model:file-list="designFile" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload>
@@ -41,7 +41,7 @@
             </a-card>
         </a-col>
         <a-col class="gutter-row" :span="8">
-            <a-card title="分析">
+            <a-card title="分析" :bodyStyle="{ height: '45rem',overflow:'auto' }">
                 <a-card title="静态文件">
                     <a-upload v-model:file-list="staticFileList" :max-count="50" :action="Utils.uploadUrl"
                         @change="handleChange" :data="{ deviceId: equipId, limit: 50, type: staticFileType }">
