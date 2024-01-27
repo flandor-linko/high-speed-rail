@@ -13,7 +13,7 @@
             <a-card :title="data[1].title">
                 <a-list size="small" bordered :data-source="data[1].list">
                     <template #renderItem="{ item }">
-                        <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{ getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{ item.name }}</span> 已在 <a-tag color="blue">{{ formatTime(item.lastFixTime) }}</a-tag> 养修</a-list-item>
+                        <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{ getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{ item.name }}</span> 已在 <a-tag color="blue">{{ formatTime(item.lastFixTime) }}</a-tag> 完成养修</a-list-item>
                     </template>
                 </a-list>
             </a-card>

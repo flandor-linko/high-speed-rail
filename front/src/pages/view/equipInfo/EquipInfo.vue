@@ -11,7 +11,10 @@
                     <a-table bordered :data-source="equipTypeInfo.paramList" :columns="columns"></a-table>
                 </a-card>
                 <a-card title="视频">
-                    <video v-if="videoFileList?.length > 0" :src="videoFileList[0].url"></video>
+                    <video style="width: 100%;" v-if="videoFileList?.length > 0" controls preload="auto">
+                        <source :src="videoFileList[0].url">
+                        </source>
+                    </video>
                     <a-upload v-model:file-list="videoFileList" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload>
                 </a-card>
