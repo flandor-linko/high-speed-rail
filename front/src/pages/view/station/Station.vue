@@ -380,6 +380,8 @@ export default {
     width: 1366px;
     height: 768px;
     background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center 0;
 }
 
 .hot-item {
