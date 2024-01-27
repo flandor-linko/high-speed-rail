@@ -12,7 +12,7 @@ http.interceptors.request.use(function (config) {
   // 生产环境下去除demo前缀
   if (import.meta.env.PROD) {
     if (config.url.indexOf("/demo") > -1) {
-      config.url.slice(config.url.indexOf("/demo") + 5, config.url.Length);
+      config.url = config.url.slice(config.url.indexOf("/demo") + 5, config.url.Length);
     }
   }
   return config;
