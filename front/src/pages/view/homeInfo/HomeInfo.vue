@@ -1,7 +1,7 @@
 <template>
     <a-row :gutter="24">
         <a-col :span="12">
-            <a-card :title="data[0].title">
+            <a-card :title="data[0].title" :bodyStyle="{ height: '40rem', overflow: 'auto' }">
                 <a-list size="small" bordered :data-source="data[0].list">
                     <template #renderItem="{ item }">
                         <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{ getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{ item.name }}</span> 应在 <a-tag color="blue">{{ formatTime(item.nextFixTime) }}</a-tag> 检查</a-list-item>
@@ -10,7 +10,7 @@
             </a-card>
         </a-col>
         <a-col :span="12">
-            <a-card :title="data[1].title">
+            <a-card :title="data[1].title" :bodyStyle="{ height: '40rem', overflow: 'auto' }">
                 <a-list size="small" bordered :data-source="data[1].list">
                     <template #renderItem="{ item }">
                         <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{ getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{ item.name }}</span> 已在 <a-tag color="blue">{{ formatTime(item.lastFixTime) }}</a-tag> 完成养修</a-list-item>
