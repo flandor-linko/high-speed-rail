@@ -1,5 +1,6 @@
 <template>
-    <h3 style="display: inline;font-weight: bolder;">站点：{{ stationName }}</h3><h3 style="display: inline;margin-left: 2rem;font-weight: bolder;">设备：{{ equipInfo?.name }}</h3>
+    <h3 style="display: inline;font-weight: bolder;">站点：{{ stationName }}</h3>
+    <h3 style="display: inline;margin-left: 2rem;font-weight: bolder;">设备：{{ equipInfo?.name }}</h3>
     <a-row :gutter="40">
         <a-col class="gutter-row" :span="8">
             <a-card title="设备简介" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
@@ -198,7 +199,7 @@ export default {
                 this.equipTypeList = res.data.data;
             }
         },
-        formatTime(str){
+        formatTime(str) {
             return moment(str).zone("+08:00").format("YYYY-MM-DD HH:mm:ss");
         },
         async viewDynamic() {
@@ -351,12 +352,18 @@ export default {
                         type: 'line',
                         smooth: true,
                         data: leftHigh10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                     },
                     {
                         name: '右高低',
                         type: 'line',
                         smooth: true,
                         data: righHigh10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                         xAxisIndex: 1,
                         yAxisIndex: 1
                     },
@@ -365,6 +372,9 @@ export default {
                         type: 'line',
                         smooth: true,
                         data: left10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                         xAxisIndex: 2,
                         yAxisIndex: 2
                     },
@@ -373,6 +383,9 @@ export default {
                         type: 'line',
                         smooth: true,
                         data: right10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                         xAxisIndex: 3,
                         yAxisIndex: 3
                     },
@@ -477,6 +490,9 @@ export default {
                     type: 'line',
                     smooth: true,
                     data: left10_2,
+                    itemStyle: {
+                        color: "#3ba272"
+                    },
                     xAxisIndex: 0,
                     yAxisIndex: 0
                 }, {
@@ -484,6 +500,9 @@ export default {
                     type: 'line',
                     smooth: true,
                     data: right10_2,
+                    itemStyle: {
+                        color: "#3ba272"
+                    },
                     xAxisIndex: 1,
                     yAxisIndex: 1
                 }, {
@@ -491,6 +510,9 @@ export default {
                     type: 'line',
                     smooth: true,
                     data: leftHigh10_2,
+                    itemStyle: {
+                        color: "#3ba272"
+                    },
                     xAxisIndex: 2,
                     yAxisIndex: 2
                 }, {
@@ -498,6 +520,9 @@ export default {
                     type: 'line',
                     smooth: true,
                     data: righHigh10_2,
+                    itemStyle: {
+                        color: "#3ba272"
+                    },
                     xAxisIndex: 3,
                     yAxisIndex: 3
                 });
@@ -603,12 +628,18 @@ export default {
                         type: 'line',
                         smooth: true,
                         data: left10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                     },
                     {
                         name: '右轨向10' + fileNameList[0],
                         type: 'line',
                         smooth: true,
                         data: right10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                         xAxisIndex: 1,
                         yAxisIndex: 1
                     },
@@ -635,6 +666,9 @@ export default {
                         type: 'line',
                         smooth: true,
                         data: leftHigh10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                         xAxisIndex: 2,
                         yAxisIndex: 2
                     },
@@ -643,6 +677,9 @@ export default {
                         type: 'line',
                         smooth: true,
                         data: righHigh10,
+                        itemStyle: {
+                            color: "#5470c6"
+                        },
                         xAxisIndex: 3,
                         yAxisIndex: 3
                     },
@@ -672,11 +709,11 @@ export default {
             const res = await http.get("/demo/device/list.json?id=" + this.equipId);
             if (res && res.data && res.data.status === 200 && res.data.data.length > 0) {
                 this.equipInfo = res.data.data[0];
-                const stationList = Utils.stationList.filter(station=> station.stationId == this.equipInfo.stationId);
-                if (stationList.length > 0) {this.stationName = stationList[0].name;}
+                const stationList = Utils.stationList.filter(station => station.stationId == this.equipInfo.stationId);
+                if (stationList.length > 0) { this.stationName = stationList[0].name; }
                 const equipInfo = this.equipTypeList.find(item => item.id === this.equipInfo.type);
                 if (equipInfo && equipInfo.other) {
-                    this.equipTypeInfo = {...JSON.parse(equipInfo.other), name: equipInfo.type };
+                    this.equipTypeInfo = { ...JSON.parse(equipInfo.other), name: equipInfo.type };
                 }
             }
         },
