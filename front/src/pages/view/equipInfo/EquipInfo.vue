@@ -22,19 +22,19 @@
         </a-col>
         <a-col class="gutter-row" :span="8">
             <a-card title="作业指导" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
-                <a-card title="设计图">
+                <a-card title="设计图" :bodyStyle="{ height: '5rem', overflow: 'auto' }">
                     <a-upload v-model:file-list="designFile" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload>
                 </a-card>
-                <a-card title="作业指导书">
+                <a-card title="作业指导书" :bodyStyle="{ height: '5rem', overflow: 'auto' }">
                     <a-upload v-model:file-list="workGuideFile" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload>
                 </a-card>
-                <a-card title="技术指导">
+                <a-card title="技术指导" :bodyStyle="{ height: '5rem', overflow: 'auto' }">
                     <a-upload v-model:file-list="skillGuideFile" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload>
                 </a-card>
-                <a-card title="投稿">
+                <a-card title="投稿" :bodyStyle="{ height: '5rem', overflow: 'auto' }">
                     <a-upload v-model:file-list="contributeFile" :show-upload-list="{ showRemoveIcon: false }"
                         :max-count="10" @change="handleChange"
                         :data="{ deviceType: equipInfo?.type, limit: 10, type: '2-5' }" :action="Utils.uploadUrl">
@@ -750,7 +750,7 @@ export default {
 }
 
 .limit-height .ant-upload-list {
-    height: 6rem;
+    height: 6.6rem;
     overflow: auto;
 }
 
