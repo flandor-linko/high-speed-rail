@@ -66,7 +66,7 @@ export default {
             }
             const res1 = await http.get("/demo/device/recentMaintenanceReminder.json");
             if (res1 && res1.data && res1.data.status === 200) {
-                this.data[1].list = res0.data.data;
+                this.data[1].list = res1.data.data;
             }
         },
         getStationName(stationId) {
