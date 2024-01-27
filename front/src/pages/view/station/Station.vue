@@ -92,9 +92,9 @@
         <a-form-item label="设备名称" name="name">
             <a-input v-model:value="spotEditData.name" style="width: 120px" />
         </a-form-item>
-        <!-- <a-form-item label="坐标X值" name="xValue">
+        <a-form-item label="坐标X值" name="xValue">
             <a-input-number v-model:value="spotEditData.position.xIndex" :min="0" style="width: 120px" />
-        </a-form-item> -->
+        </a-form-item>
         <a-form-item label="设备类型" name="type">
             <a-select v-model:value="spotEditData.type" style="width: 120px">
                 <a-select-option v-for="item in equipTypeList" :value="item.id" :key="item.id">{{ item.type
@@ -151,7 +151,7 @@ const spotDefaultValue = {
     position: {
         x: 100,
         y: 100,
-        // xIndex: 0,
+        xIndex: 0,
     },
 };
 
@@ -164,7 +164,7 @@ export default {
             curAddId: -1,
             open: false,
             spotEditOpen: false,
-            spotEditData: undefined,
+            spotEditData: null,
             popoverOpen: true,
             triggerMode: 0,  // 0悬浮；1直接显示
             /**设备点列表 */
@@ -192,10 +192,10 @@ export default {
         this.getData();
 
     },
-    async updated() {
-        this.getData();
-        this.equipType = -1;
-    },
+    // async updated() {
+    //     this.getData();
+    //     this.equipType = -1;
+    // },
     methods: {
         async getData() {
             this.stationId = this.$route.params.id ? this.$route.params.id : "0";
@@ -218,10 +218,14 @@ export default {
             if (res && res.data && res.data.status === 200) {
                 const spotList = res.data.data;
                 this.spotList = _.map(spotList, (item: SpotType) => {
-                    return {
+                    let spot = {
                         ...item,
                         position: JSON.parse(item.position)
+                    };
+                    if (!spot.position.xIndex) {
+                        spot.position = { xIndex: 0, ...spot.position };
                     }
+                    return spot;
                 });
             }
         },
@@ -294,9 +298,6 @@ export default {
             this.spotEditOpen = true;
         },
         clickEditSpot(spot) {
-            // if (!spot.position.xIndex) {
-            //     spot.position.xIndex = spotDefaultValue.position.xIndex;
-            // }
             this.spotEditData = spot;
             this.spotEditOpen = true;
         },
