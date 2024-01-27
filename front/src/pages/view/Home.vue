@@ -35,7 +35,7 @@ export default {
             this.$router.replace({ name: "station", params: { id: this.site } });
         },
         goHome() {
-            this.$router.replace({ name: "Home" });
+            window.location.href = "";
         }
     }
 }
