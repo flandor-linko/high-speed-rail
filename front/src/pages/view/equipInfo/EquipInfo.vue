@@ -11,6 +11,7 @@
                     <a-table bordered :data-source="equipTypeInfo.paramList" :columns="columns"></a-table>
                 </a-card>
                 <a-card title="视频">
+                    <video v-if="videoFileList?.length > 0" :src="videoFileList[0].url"></video>
                     <a-upload v-model:file-list="videoFileList" :show-upload-list="{ showRemoveIcon: false }">
                     </a-upload>
                 </a-card>
@@ -81,11 +82,11 @@
 
     <a-modal v-model:open="chartModalOpen" title="数据信息" width="100%" wrap-class-name="full-modal"
         @ok="chartModalOpen = false">
-        <div style="width:1366px;height:768px" ref="chart" id="chart"></div>
+        <div v-if="chartModalOpen" style="width:1366px;height:768px" ref="chart" id="staticChart"></div>
     </a-modal>
     <a-modal v-model:open="dynamicChartModalOpen" title="数据信息" width="100%" wrap-class-name="full-modal"
         @ok="dynamicChartModalOpen = false">
-        <div style="width:1366px;height:768px" ref="chart" id="chart"></div>
+        <div v-if="dynamicChartModalOpen" style="width:1366px;height:768px" ref="chart" id="chart"></div>
     </a-modal>
 </template>
 
@@ -501,7 +502,7 @@ export default {
 
             // 防止获取不到dom元素
             await this.$nextTick();
-            let myChart = echarts.init(document.getElementById('chart'));
+            let myChart = echarts.init(document.getElementById('staticChart'));
             // 绘制图表
             myChart.setOption({
                 title: [
