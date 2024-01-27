@@ -25,6 +25,7 @@ export default defineConfig({
       "/demo": {
         target: "http://124.221.249.140:8080/", // api接口代理,
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/demo/, ""),
       },
     },
     hmr: {
