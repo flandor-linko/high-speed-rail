@@ -82,11 +82,11 @@
 
     <a-modal v-model:open="chartModalOpen" title="数据信息" width="100%" wrap-class-name="full-modal"
         @ok="chartModalOpen = false">
-        <div v-if="chartModalOpen" style="width:1366px;height:768px" ref="chart" id="staticChart"></div>
+        <div v-if="chartModalOpen" style="width:100%;height:100%" ref="chart" id="staticChart"></div>
     </a-modal>
     <a-modal v-model:open="dynamicChartModalOpen" title="数据信息" width="100%" wrap-class-name="full-modal"
         @ok="dynamicChartModalOpen = false">
-        <div v-if="dynamicChartModalOpen" style="width:1366px;height:768px" ref="chart" id="chart"></div>
+        <div v-if="dynamicChartModalOpen" style="width:100%;height:100%" ref="chart" id="chart"></div>
     </a-modal>
 </template>
 
