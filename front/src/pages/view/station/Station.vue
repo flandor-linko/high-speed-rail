@@ -208,6 +208,7 @@ export default {
             await this.getSpotList();
         },
         async getEquipTypeList() {
+            this.equipType = -1;
             const res = await http.get("/demo/deviceType/list.json");
             if (res && res.data && res.data.status === 200) {
                 this.equipTypeList = res.data.data;
