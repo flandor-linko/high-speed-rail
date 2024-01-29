@@ -1,6 +1,6 @@
 <template>
     <h3 style="display: inline;font-weight: bolder;">站点：{{ stationName }}</h3>
-    <h3 style="display: inline;margin-left: 2rem;font-weight: bolder;">设备：{{ equipInfo?.name }}</h3>
+    <h3 style="display: inline;margin-left: 2rem;font-weight: bolder;">设备：{{ equipTypeInfo.name }}  {{ equipInfo?.name }}</h3>
     <a-row :gutter="40">
         <a-col class="gutter-row" :span="8">
             <a-card title="设备简介" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
