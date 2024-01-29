@@ -1,6 +1,7 @@
 <template>
     <h3 style="display: inline;font-weight: bolder;">站点：{{ stationName }}</h3>
-    <h3 style="display: inline;margin-left: 2rem;font-weight: bolder;">设备：{{ equipTypeInfo.name }}  {{ equipInfo?.name }}</h3>
+    <h3 style="display: inline;margin-left: 2rem;font-weight: bolder;">设备：{{ equipTypeInfo.name }} {{ equipInfo?.name }}
+    </h3>
     <a-row :gutter="40">
         <a-col class="gutter-row" :span="8">
             <a-card title="设备简介" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
@@ -49,8 +50,9 @@
         <a-col class="gutter-row" :span="8">
             <a-card title="分析" :bodyStyle="{ height: '38rem', overflow: 'auto' }">
                 <a-card title="静态文件">
-                    <a-upload class="limit-height" v-model:file-list="staticFileList" :max-count="50" :action="Utils.uploadUrl"
-                        @change="handleChange" :data="{ deviceId: equipId, limit: 50, type: staticFileType }">
+                    <a-upload class="limit-height" v-model:file-list="staticFileList" :max-count="50"
+                        :action="Utils.uploadUrl" @change="handleChange"
+                        :data="{ deviceId: equipId, limit: 50, type: staticFileType }">
                         <a-button @click="staticFileType = '0-0'">
                             <upload-outlined></upload-outlined>
                             上传检查文件
@@ -69,10 +71,12 @@
                         </template>
                     </a-upload>
                     <a-button @click="viewStatic" :icon="h(SearchOutlined)">看图</a-button>
+                    <a-button @click="delSatic" :icon="h(DeleteOutlined)">删除</a-button>
                 </a-card>
                 <a-card title="动态文件">
-                    <a-upload class="limit-height" v-model:file-list="dynamicFileList" :max-count="10" :action="Utils.uploadUrl"
-                        @change="handleChange" :data="{ deviceId: equipId, limit: 10, type: '1' }">
+                    <a-upload class="limit-height" v-model:file-list="dynamicFileList" :max-count="10"
+                        :action="Utils.uploadUrl" @change="handleChange"
+                        :data="{ deviceId: equipId, limit: 10, type: '1' }">
                         <a-button>
                             <upload-outlined></upload-outlined>
                             上传动态文件
@@ -103,7 +107,7 @@
 
 <script lang="ts">
 import { h } from 'vue';
-import { SearchOutlined } from '@ant-design/icons-vue';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons-vue';
 import _ from "lodash";
 import * as echarts from 'echarts';
 import { Modal, UploadChangeParam, UploadProps, message } from 'ant-design-vue';
@@ -117,6 +121,7 @@ export default {
             chartModalOpen: false,
             dynamicChartModalOpen: false,
             h: h,
+            DeleteOutlined: DeleteOutlined,
             SearchOutlined: SearchOutlined,
             videoFileList: ([]) as UploadProps['fileList'],
             designFile: ([]) as UploadProps['fileList'],
@@ -428,6 +433,46 @@ export default {
                 modal.update({ type: "error", content: `文件加载失败` });
             }
         },
+        async delSatic() {
+            const staticFileList = this.staticFileList.filter(staticFile => {
+                return this.staticChecked[staticFile.uid];
+            });
+            if (staticFileList.length === 0) {
+                message.error(`请选择静态文件`);
+                return;
+            }
+            const staticFileIds = staticFileList.map(staticFile => {
+                return staticFile.uid;
+            });
+            const resList = [];
+            for (let i = 0; i < staticFileIds.length; i++) {
+                const res = http.get("/demo/file/delete.json", { params: { id: staticFileIds[i] } });
+                resList.push(res);
+            }
+            const res = await Promise.all(resList);
+            if (res && res.every(item => item.data.status === 200)) {
+                message.success(`删除成功`);
+                // 初始化列表
+                this.initStaticList();
+            } else {
+                message.error(`删除失败`);
+            }
+        },
+        async initStaticList() {
+            const res6 = http.get("/demo/file/list.json", { params: { deviceId: this.equipId, type: "0-0" } });
+            const res7 = http.get("/demo/file/list.json", { params: { deviceId: this.equipId, type: "0-1" } });
+            const res = await Promise.all([res6, res7]);
+            if (res) {
+                const staticCheckInfo = res[0].data.data;
+                const staticCheckFile = (staticCheckInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id, type: "0-0" }; }));
+                const staticFixInfo = res[1].data.data;
+                const staticFixFile = (staticFixInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id, type: "0-1" }; }));
+                this.staticFileList = [...staticCheckFile, ...staticFixFile].sort((a, b) => a.uid - b.uid);
+                this.staticFileList.forEach(staticFile => {
+                    this.staticChecked[staticFile.uid] = false;
+                });
+            }
+        },
         async initStaticChart(dataList, fileNameList) {
             this.chartModalOpen = true;
             // const xData = dataList[0].map(item => { return item.realMileage; });
@@ -712,7 +757,10 @@ export default {
                 const stationList = Utils.stationList.filter(station => station.stationId == this.equipInfo.stationId);
                 if (stationList.length > 0) { this.stationName = stationList[0].name; }
                 const equipInfo = this.equipTypeList.find(item => item.id === this.equipInfo.type);
-                if (equipInfo && equipInfo.other) {
+                if (equipInfo) {
+                    if (!equipInfo.other) {
+                        equipInfo.other = JSON.stringify({des: "", paramList: ""});
+                    }
                     this.equipTypeInfo = { ...JSON.parse(equipInfo.other), name: equipInfo.type };
                 }
             }
@@ -753,5 +801,4 @@ export default {
     height: 6.6rem;
     overflow: auto;
 }
-
 </style>
