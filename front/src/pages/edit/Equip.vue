@@ -131,6 +131,17 @@
                             </a-upload>
                         </a-form-item>
                     </a-card>
+
+                    <a-card title="动态文件" :bordered="false" style="margin-top: 2rem;">
+                        <a-upload class="limit-height" v-model:file-list="dynamicFileList" :max-count="10"
+                            :action="Utils.uploadUrl" @change="handleChange" @remove="handleRemove"
+                            :data="{ limit: 10, type: '1' }">
+                            <a-button>
+                                <upload-outlined></upload-outlined>
+                                上传动态文件
+                            </a-button>
+                        </a-upload>
+                    </a-card>
                 </a-col>
             </a-row>
         </a-form>
@@ -181,6 +192,7 @@ export default {
             workGuideFile: ([]) as UploadProps['fileList'],
             skillGuideFile: ([]) as UploadProps['fileList'],
             contributeFile: ([]) as UploadProps['fileList'],
+            dynamicFileList: ([]) as UploadProps['fileList'],
             equipTypeList: [] as EquipType[],
             cycleValue: 1,
             formState: {
@@ -226,7 +238,8 @@ export default {
             const res3 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-3" } });
             const res4 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-4" } });
             const res5 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-5" } });
-            const res = await Promise.all([res1, res2, res3, res4, res5]);
+            const res6 = http.get("/demo/file/list.json", { params: { type: "1" } });
+            const res = await Promise.all([res1, res2, res3, res4, res5, res6]);
             if (res) {
                 const videoInfo = res[0].data.data;
                 this.videoFile = (videoInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
@@ -238,6 +251,8 @@ export default {
                 this.skillGuideFile = (skillGuideInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
                 const contributeInfo = res[4].data.data;
                 this.contributeFile = (contributeInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
+                const dynamicFileInfo = res[5].data.data;
+                this.dynamicFileList = (dynamicFileInfo.map(info => { return { name: `${info.name} [${this.formatTime(info.createTime)}]`, uid: info.id, status: 'done', url: Utils.filePrefix + info.id }; }));
             }
         },
         handleChange(info: UploadChangeParam) {
@@ -248,7 +263,7 @@ export default {
                 message.error(`${info.file.name} 文件上传失败`);
             }
         },
-        formatTime(str){
+        formatTime(str) {
             return moment(str).zone("+08:00").format("YYYY-MM-DD HH:mm:ss");
         },
         async handleRemove(file) {
@@ -346,5 +361,10 @@ export default {
     background: #ececec;
     padding: 30px;
     text-align: left;
+}
+
+.limit-height .ant-upload-list {
+    height: 6rem;
+    overflow: auto;
 }
 </style>

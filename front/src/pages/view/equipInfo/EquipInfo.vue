@@ -76,7 +76,7 @@
                 <a-card title="动态文件">
                     <a-upload class="limit-height" v-model:file-list="dynamicFileList" :max-count="10"
                         :action="Utils.uploadUrl" @change="handleChange"
-                        :data="{ deviceId: equipId, limit: 10, type: '1' }">
+                        :data="{ limit: 10, type: '1' }">
                         <a-button>
                             <upload-outlined></upload-outlined>
                             上传动态文件
@@ -170,7 +170,7 @@ export default {
             const res5 = http.get("/demo/file/list.json", { params: { deviceType: this.equipInfo.type, type: "2-5" } });
             const res6 = http.get("/demo/file/list.json", { params: { deviceId: this.equipId, type: "0-0" } });
             const res7 = http.get("/demo/file/list.json", { params: { deviceId: this.equipId, type: "0-1" } });
-            const res8 = http.get("/demo/file/list.json", { params: { deviceId: this.equipId, type: "1" } });
+            const res8 = http.get("/demo/file/list.json", { params: { type: "1" } });
             const res = await Promise.all([res1, res2, res3, res4, res5, res6, res7, res8]);
             if (res) {
                 const videoInfo = res[0].data.data;
