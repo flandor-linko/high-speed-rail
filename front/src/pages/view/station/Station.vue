@@ -8,8 +8,29 @@
             </a-radio-group>
         </a-col>
     </a-row>
-    <a-card title="站点设备信息图" style="width: 1369px" :bodyStyle="{ padding: '1px' }">
-        <template #extra>
+    <a-card style="width: 1369px" :bodyStyle="{ padding: '1px' }" class="view-card">
+        <template #title style="">
+            <div class="view-title">
+                <div class="view-name">站点设备信息图</div>
+                <div v-if="mode === Mode.View" class="edit-row">
+                    <div @click="clickEdit">
+                        <EditTwoTone style="font-size:1.6rem;" />编辑
+                    </div>
+                </div>
+                <div v-else class="edit-row">
+                    <div @click="clickAdd">
+                        <PlusCircleTwoTone style="font-size:1.6rem;" />添加
+                    </div>
+                    <div @click="clickOk" style="margin-left: 2rem;">
+                        <CheckCircleTwoTone style="font-size:1.6rem;" />完成
+                    </div>
+                    <div @click="clickPic" style="margin-left: 2rem;">
+                        <PictureTwoTone style="font-size:1.6rem;" />上传底图
+                    </div>
+                </div>
+            </div>
+        </template>
+        <!-- <template #extra>
             <div v-if="mode === Mode.View" class="edit-row">
                 <div @click="clickEdit">
                     <EditTwoTone style="font-size:1.6rem;" />编辑
@@ -26,7 +47,7 @@
                     <PictureTwoTone style="font-size:1.6rem;" />上传底图
                 </div>
             </div>
-        </template>
+        </template> -->
         <div>
             <draggable v-if="mode === Mode.Edit"
                 :style="{ 'background-image': 'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id : '') + ')' }"
@@ -390,6 +411,18 @@ export default {
 
 .ant-card-body {
     padding: 1px;
+}
+
+.view-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.view-card .view-name {
+    margin-right: 3rem;
+    font-size: larger;
 }
 
 .edit-row {

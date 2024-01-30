@@ -75,8 +75,7 @@
                 </a-card>
                 <a-card title="动态文件">
                     <a-upload class="limit-height" v-model:file-list="dynamicFileList" :max-count="10"
-                        :action="Utils.uploadUrl" @change="handleChange"
-                        :data="{ limit: 10, type: '1' }">
+                        :action="Utils.uploadUrl" @change="handleChange" :data="{ limit: 10, type: '1' }">
                         <a-button>
                             <upload-outlined></upload-outlined>
                             上传动态文件
@@ -759,7 +758,7 @@ export default {
                 const equipInfo = this.equipTypeList.find(item => item.id === this.equipInfo.type);
                 if (equipInfo) {
                     if (!equipInfo.other) {
-                        equipInfo.other = JSON.stringify({des: "", paramList: ""});
+                        equipInfo.other = JSON.stringify({ des: "", paramList: "" });
                     }
                     this.equipTypeInfo = { ...JSON.parse(equipInfo.other), name: equipInfo.type };
                 }
@@ -801,4 +800,5 @@ export default {
     height: 6.6rem;
     overflow: auto;
 }
+
 </style>
