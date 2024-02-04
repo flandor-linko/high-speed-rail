@@ -51,7 +51,7 @@
         <div>
             <draggable v-if="mode === Mode.Edit"
                 :style="{ 'background-image': 'url(' + (picFile.length > 0 ? Utils.filePrefix + picFile[0].id : '') + ')' }"
-                class="drag-area" v-model="spotList" @end="dragEnd" item-key="id">
+                class="drag-area" v-model="spotList" @start="dragStart" @end="dragEnd" item-key="id">
                 <template #item="{ element }">
                     <div class="hot-item" @click="clickEditSpot(element)"
                         :style="{ 'left': element.position.x + 'px', 'top': element.position.y + 'px' }">
@@ -200,6 +200,8 @@ export default {
                 //     "position": { x: 100, y: 100 }
                 // }
             ] as SpotType[],
+            startClientX: 0,
+            startClientY: 0,
             stationId: "0",
             mode: Mode.View,
             Mode: Mode,
@@ -296,16 +298,20 @@ export default {
                 this.getPicFile();
             }
         },
+        dragStart(evt){
+            this.startClientX = evt.originalEvent.clientX;
+            this.startClientY = evt.originalEvent.clientY;
+        },
         dragEnd(evt) {
             console.log(evt);
             const itemEl = evt.item;
             const targetId = itemEl.__draggable_context.element.id;
-            const newPosX = evt.originalEvent.offsetX;
-            const newPosY = evt.originalEvent.offsetY;
+            const newPosX = evt.originalEvent.clientX - this.startClientX;
+            const newPosY = evt.originalEvent.clientY - this.startClientY;
             const targetItem = this.spotList.find(item => item.id === targetId);
             if (targetItem) {
-                targetItem.position.x = newPosX;
-                targetItem.position.y = newPosY;
+                targetItem.position.x += newPosX;
+                targetItem.position.y += newPosY;
             }
         },
         clickEdit() {
