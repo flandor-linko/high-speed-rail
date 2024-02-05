@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { theme } from 'ant-design-vue';
+import zhCN from 'ant-design-vue/es/locale/zh_CN';
 // import HelloWorld from './components/HelloWorld.vue';
 // import Equip from './pages/edit/Equip.vue';
 // import Home from './pages/view/Home.vue';
@@ -12,7 +13,7 @@ import { theme } from 'ant-design-vue';
 </script>
 
 <template>
-  <a-config-provider  locale="zh_CN"
+  <a-config-provider  :locale="zhCN"
     :theme="{
       algorithm: theme.defaultAlgorithm,
     }"
