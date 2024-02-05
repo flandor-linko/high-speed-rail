@@ -2,7 +2,7 @@
     <a-row>
         <a-col>
             <span style="font-size: 1.2rem;font-weight: 600;">设备：</span>
-            <a-radio-group class="menu" v-model:value="equipType" @change="typeChange" button-style="solid" size="large">
+            <a-radio-group class="menu" v-model:value="equipType" button-style="solid" size="large">
                 <a-radio-button v-for="item in equipTypeList" :value="+item.id" :key="item.id">{{ item.type
                 }}</a-radio-button>
             </a-radio-group>
@@ -235,7 +235,6 @@ export default {
             if (res && res.data && res.data.status === 200) {
                 this.equipTypeList = res.data.data;
                 spotDefaultValue.type = this.equipTypeList[0].id;
-                this.typeChange();
             };
         },
         async getSpotList() {
@@ -254,8 +253,6 @@ export default {
                     return spot;
                 });
             }
-        },
-        async typeChange() {
         },
         clickSpot(equipId) {
             this.$router.push({ name: "equipInfo", params: { equipId: equipId } });
