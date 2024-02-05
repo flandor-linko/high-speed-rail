@@ -3,6 +3,7 @@
         <a-col>
             <span style="font-size: 1.2rem;font-weight: 600;">设备：</span>
             <a-radio-group class="menu" v-model:value="equipType" button-style="solid" size="large">
+                <a-radio-button :value="-1" :key="-1">全部</a-radio-button>
                 <a-radio-button v-for="item in equipTypeList" :value="+item.id" :key="item.id">{{ item.type
                 }}</a-radio-button>
             </a-radio-group>
