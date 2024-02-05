@@ -26,8 +26,25 @@ const routes = [
     },
     {
         path: '/equip',
-        name: 'Equip',
-        component: () => import('./pages/edit/Equip.vue')
+        name: 'EquipIndex',
+        component: () => import('./pages/edit/EquipIndex.vue'),
+        children: [
+            {
+                path: '/equip/stationMgt',
+                name: 'stationMgt',
+                component: () => import('./pages/edit/StationMgt.vue')
+            },
+            {
+                path: '/equip/equipTypeMgt',
+                name: 'equipTypeMgt',
+                component: () => import('./pages/edit/EquipTypeMgt.vue'),
+            },
+            {
+                path: '/equip',
+                name: 'equipMgt',
+                component: () => import('./pages/edit/Equip.vue')
+            },
+        ]
     }
 ];
 

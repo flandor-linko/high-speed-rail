@@ -10,38 +10,36 @@
         </a-form>
     </a-modal>
     <div class="container">
-        <div>
-        </div>
-        <h2>&nbsp;&nbsp;&nbsp;&nbsp;{{ greeting }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <h2>
+            <!-- &nbsp;&nbsp;&nbsp;&nbsp;{{ greeting }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
 
-            <a-radio-group v-model:value="equipType" button-style="solid" @change="typeChange">
+            <!-- <a-radio-group v-model:value="equipType" button-style="solid" @change="typeChange">
                 <a-radio-button v-for="item in equipTypeList" :value="+item.id" :key="item.id">{{ item.type
                 }}</a-radio-button>
-                <!-- <a-radio-button value="1">轨道</a-radio-button>
-                <a-radio-button value="2">接头</a-radio-button>
-                <a-radio-button value="3">道岔</a-radio-button>
-                <a-radio-button value="4">道床</a-radio-button>
-                <a-radio-button value="5">钢轨</a-radio-button>
-                <a-radio-button value="6">曲线</a-radio-button>
-                <a-radio-button value="7">桥隧</a-radio-button>
-                <a-radio-button value="8">桥墩</a-radio-button>
-                <a-radio-button value="9">桥梁</a-radio-button> -->
-            </a-radio-group>
-
-            <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;margin-top: 1rem;display: flex;">
-                <a-row>
-                    <a-col>
-                        <a-input-number size="large" id="inputNumber" v-model:value="cycleValue" :min="1" addon-after="月" />
-                    </a-col>
-                    <!-- <a-col>
+            </a-radio-group> -->
+            <a-form layout="inline">
+                <a-form-item label="设备类型" name="type">
+                    <a-select v-model:value="equipType" style="width: 120px" @change="typeChange" size="large">
+                        <a-select-option v-for="item in equipTypeList" :value="item.id" :key="item.id">{{ item.type
+                        }}</a-select-option>
+                    </a-select>
+                </a-form-item>
+                <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;">
+                    <a-row>
+                        <a-col>
+                            <a-input-number size="large" id="inputNumber" v-model:value="cycleValue" :min="1"
+                                addon-after="月" />
+                        </a-col>
+                        <!-- <a-col>
                         <a-select size="large" ref="select" v-model:value="cycle" style="width: 120px">
                             <a-select-option value="1">天</a-select-option>
                             <a-select-option value="2">周</a-select-option>
                             <a-select-option value="3">月</a-select-option>
                         </a-select>
                     </a-col> -->
-                </a-row>
-            </a-form-item>
+                    </a-row>
+                </a-form-item>
+            </a-form>
         </h2>
         <a-form layout="vertical" :model="formState">
             <a-row :gutter="40">
