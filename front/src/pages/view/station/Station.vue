@@ -77,8 +77,7 @@
                         <EnvironmentTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
                     </a-popover>
-                    <a-popover v-else-if="equipType === element.type" :title="element.name" trigger="hover"
-                        :open="popoverOpen">
+                    <a-popover v-else-if="equipType === element.type" :title="element.name" trigger="hover">
                         <template #content>
                             <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
                             <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
@@ -298,7 +297,7 @@ export default {
                 this.getPicFile();
             }
         },
-        dragStart(evt){
+        dragStart(evt) {
             this.startClientX = evt.originalEvent.clientX;
             this.startClientY = evt.originalEvent.clientY;
         },
