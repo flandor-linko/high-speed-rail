@@ -8,7 +8,7 @@
     <a-row>
         <a-col>
             <span style="font-size: 1.2rem;font-weight: 600;">站点：</span>
-            <a-radio-group class="menu" v-model:value="site" @change="handleChange" button-style="solid" size="large">
+            <a-radio-group class="menu" v-model:value="site" button-style="solid" size="large">
                 <a-radio-button @click="clickStation(item.stationId)" v-for="item in stationList" :value="item.stationId">{{
                     item.name }}</a-radio-button>
             </a-radio-group>
@@ -29,12 +29,9 @@ export default {
         }
     },
     async created() {
-        this.site = this.$route.params.id ? this.$route.params.id : "0";
+        this.site = +(this.$route.params.id ? this.$route.params.id : "0");
     },
     methods: {
-        handleChange() {
-            // this.$router.replace({ name: "station", params: { id: this.site } });
-        },
         goHome() {
             window.location.href = "";
         },
