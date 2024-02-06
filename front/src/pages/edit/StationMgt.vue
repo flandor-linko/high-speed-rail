@@ -12,7 +12,7 @@
                 </template>
                 <template v-else-if="column.dataIndex === 'operation'">
                     <a @click="clickEdit(record.id)" style="margin-right:2rem;">修改</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a-popconfirm v-if="dataSource.length" title="确定要删除吗？" @confirm="onDelete(record.id)">
+                    <a-popconfirm v-if="dataSource.length" title="将会删除该站点下所有的数据，确定要删除吗？" @confirm="onDelete(record.id)">
                         <a>删除</a>
                     </a-popconfirm>
                 </template>
