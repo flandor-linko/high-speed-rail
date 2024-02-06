@@ -117,9 +117,7 @@
             <a-input-number v-model:value="spotEditData.position.xIndex" :min="0" style="width: 120px" />
         </a-form-item>
         <a-form-item label="设备类型" name="type">
-            <a-select v-model:value="spotEditData.type" style="width: 120px">
-                <a-select-option v-for="item in equipTypeList" :value="item.id" :key="item.id">{{ item.type
-                }}</a-select-option>
+            <a-select v-model:value="spotEditData.type" show-search :options="options" style="width: 120px" :filterOption="filterOption">
             </a-select>
         </a-form-item>
         <a-form-item label="删除设备" name="name">
@@ -187,6 +185,7 @@ export default {
             spotEditOpen: false,
             spotEditData: null,
             popoverOpen: true,
+            options:[],
             triggerMode: 0,  // 0悬浮；1直接显示
             /**设备点列表 */
             spotList: [
@@ -236,6 +235,7 @@ export default {
             const res = await http.get("/demo/deviceType/list.json");
             if (res && res.data && res.data.status === 200) {
                 this.equipTypeList = res.data.data;
+                this.options = this.equipTypeList.map(equipType=> {return {value: equipType.id, label: equipType.type};});
                 spotDefaultValue.type = this.equipTypeList[0].id;
             };
         },
@@ -255,6 +255,9 @@ export default {
                     return spot;
                 });
             }
+        },
+        filterOption(inputValue, option) {
+            return option.label.indexOf(inputValue) >= 0;
         },
         clickSpot(equipId) {
             this.$router.push({ name: "equipInfo", params: { equipId: equipId } });
