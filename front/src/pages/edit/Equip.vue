@@ -54,7 +54,7 @@
                         <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">添加参数</a-button>
                         <a-table bordered :data-source="dataSource" :columns="columns">
                             <template #bodyCell="{ column, text, record }">
-                                <template v-if="column.dataIndex === 'name' || column.dataIndex === 'value'">
+                                <template v-if="column.dataIndex === 'name'">
                                     <div class="editable-cell">
                                         <div v-if="editableData[record.name]" class="editable-cell-input-wrapper">
                                             <a-input v-model:value="editableData[record.name].name"
@@ -64,6 +64,19 @@
                                         <div v-else class="editable-cell-text-wrapper">
                                             {{ text || ' ' }}
                                             <edit-outlined class="editable-cell-icon" @click="edit(record.name)" />
+                                        </div>
+                                    </div>
+                                </template>
+                                <template v-if="column.dataIndex === 'value'">
+                                    <div class="editable-cell">
+                                        <div v-if="editableData[record.value]" class="editable-cell-input-wrapper">
+                                            <a-input v-model:value="editableData[record.value].value"
+                                                @pressEnter="save(record.value)" />
+                                            <check-outlined class="editable-cell-icon-check" @click="saveValue(record.value)" />
+                                        </div>
+                                        <div v-else class="editable-cell-text-wrapper">
+                                            {{ text || ' ' }}
+                                            <edit-outlined class="editable-cell-icon" @click="editValue(record.value)" />
                                         </div>
                                     </div>
                                 </template>
@@ -320,8 +333,15 @@ export default {
             Object.assign(this.dataSource.filter(item => name === item.name)[0], this.editableData[name]);
             delete this.editableData[name];
         },
+        saveValue(value: string) {
+            Object.assign(this.dataSource.filter(item => value === item.value)[0], this.editableData[value]);
+            delete this.editableData[value];
+        },
         edit(name: string) {
             this.editableData[name] = _.cloneDeep(this.dataSource.filter(item => name === item.name)[0]);
+        },
+        editValue(value: string) {
+            this.editableData[value] = _.cloneDeep(this.dataSource.filter(item => value === item.value)[0]);
         },
         onDelete(name: string) {
             this.dataSource = this.dataSource.filter(item => item.name !== name);
