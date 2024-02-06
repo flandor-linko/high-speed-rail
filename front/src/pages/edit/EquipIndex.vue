@@ -32,6 +32,7 @@ export default {
         }
     },
     async created() {
+        this.current = [this.$route.name];
     },
     methods: {
     }
