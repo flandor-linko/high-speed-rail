@@ -9,7 +9,8 @@
         <a-col>
             <span style="font-size: 1.2rem;font-weight: 600;">站点：</span>
             <a-radio-group class="menu" v-model:value="site" @change="handleChange" button-style="solid" size="large">
-                <a-radio-button @click="clickStation(item.stationId)" v-for="item in stationList" :value="item.stationId">{{ item.name }}</a-radio-button>
+                <a-radio-button @click="clickStation(item.stationId)" v-for="item in stationList" :value="item.stationId">{{
+                    item.name }}</a-radio-button>
             </a-radio-group>
         </a-col>
     </a-row>

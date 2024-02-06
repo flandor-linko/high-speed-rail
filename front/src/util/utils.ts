@@ -4,15 +4,29 @@ const Utils = {
     /**上传文件接口 */
     uploadUrl: `${import.meta.env.PROD ? '' :'/demo'}/file/upload.json`,
     /**站点列表 */
-    stationList: [
-        { stationId: '1', name: "线路所", color: "#2db7f5" },
-        { stationId: '2', name: "阜阳西", color: "#87d068" },
-        { stationId: '3', name: "太和东", color: "#2db7f5" },
-        { stationId: '4', name: "临泉", color: "#f50" },
-        { stationId: '5', name: "界首", color: "#87d068" },
-        { stationId: '6', name: "古城东", color: "#87d068" },
-        { stationId: '7', name: "毫州南", color: "#87d068" },
-        { stationId: '8', name: "芦庙", color: "#87d068" },
+    stationList: [],
+    colorList: [
+        "#f50",
+        "#87d068",
+        "#2db7f5",
+        "#f50",
+        "#EE30A7",
+        "#BF3EFF",
+        "#DAA520",
+        "#836FFF",
+        "#00EE00",
+        "#8B1C62",
+        "#436EEE",
+        "#B23AEE",
+        "#CD6600",
+        "#EE7AE9",
+        "#FF7256",
+        "#33ffcc",
+        "#6666ff",
+        "#99ffff",
+        "#660099",
+        "#660033",
+        "#663300",
     ],
 }
 

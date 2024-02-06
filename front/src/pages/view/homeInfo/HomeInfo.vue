@@ -106,13 +106,14 @@ export default {
             return typeName;
         },
         getStationColor(stationId) {
-            let color = Utils.stationList[0].color;
+            // let color = Utils.stationList[0].color;
             // Utils.stationList.forEach(item => {
             //     if (+item.stationId === stationId) {
             //         color = item.color;
             //     }
             // });
-            return color;
+            // return color;
+            return "#2db7f5";
         },
         formatTime(timeStr: string) {
             return moment(timeStr).zone("+08:00").format("YYYY-MM-DD");

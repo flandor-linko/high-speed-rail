@@ -1,24 +1,13 @@
-<script setup lang="ts">
+<script setup lang="ts" >
 import { theme } from 'ant-design-vue';
 import zhCN from 'ant-design-vue/es/locale/zh_CN';
-// import HelloWorld from './components/HelloWorld.vue';
-// import Equip from './pages/edit/Equip.vue';
-// import Home from './pages/view/Home.vue';
-
-// const routes = [
-//   { path: '/', component: Home },
-//   { path: '/equip', component: Equip },
-// ]
-
 </script>
 
 <template>
-  <a-config-provider  :locale="zhCN"
-    :theme="{
-      algorithm: theme.defaultAlgorithm,
-    }"
-  >
-  <router-view></router-view>
+  <a-config-provider :locale="zhCN" :theme="{
+    algorithm: theme.defaultAlgorithm,
+  }">
+    <router-view></router-view>
   </a-config-provider>
   <!-- <div>
     <a href="https://vitejs.dev" target="_blank">
@@ -38,9 +27,11 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN';
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
 }
