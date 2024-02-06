@@ -224,6 +224,7 @@ export default {
     // },
     methods: {
         async getData() {
+            this.mode = Mode.View;
             this.stationId = this.$route.params.id ? this.$route.params.id : "0";
             spotDefaultValue.stationId = this.stationId;
             await this.getEquipTypeList();
