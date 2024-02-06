@@ -25,7 +25,7 @@
                     </a-select>
                 </a-form-item> -->
                 <a-form-item label="设备类型名称" name="typeName">
-                    <a-input v-model:value="typeName" placeholder="设备类型名称" style="width: 120px" />
+                    <a-input size="large" v-model:value="typeName" placeholder="设备类型名称" style="width: 120px" />
                 </a-form-item>
                 <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;">
                     <a-row>
