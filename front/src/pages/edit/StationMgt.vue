@@ -54,7 +54,6 @@ export default {
             addData: {
                 name: ""
             },
-            editableData: {},
         }
     },
     async created() {
@@ -63,7 +62,7 @@ export default {
     methods: {
         async getData() {
             this.loading = true;
-            const res = await http.get("/demo//station/list.json");
+            const res = await http.get("/demo/station/list.json");
             if (res && res.data && res.data.status === 200) {
                 this.dataSource = res.data.data;
                 this.loading = false;
@@ -73,26 +72,6 @@ export default {
             this.addOpen = true;
             this.modalMode = "edit";
             this.addData = _.cloneDeep(this.dataSource.filter(item => id === item.id)[0]);
-        },
-        edit(id: string) {
-            this.editableData[id] = _.cloneDeep(this.dataSource.filter(item => id === item.id)[0]);
-        },
-        save(id: string) {
-            if (!this.editableData[id].name) {
-                message.error(`站点名称必填！`);
-                return;
-            }
-            const data = {
-                id: id,
-                name: this.editableData[id].name
-            }
-            // 修改为body中传参
-            http.post("/demo/station/update.json", data).then(res => {
-                if (res && res.data && res.data.status === 200) {
-                    message.success("保存成功");
-                    this.getData();
-                }
-            });
         },
         onDelete(id: string) {
             http.get("/demo/station/delete.json?id=" + id).then(res => {

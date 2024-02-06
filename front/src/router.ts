@@ -28,6 +28,7 @@ const routes = [
         path: '/equip',
         name: 'EquipIndex',
         component: () => import('./pages/edit/EquipIndex.vue'),
+        redirect: '/equip/stationMgt',
         children: [
             {
                 path: '/equip/stationMgt',
@@ -38,10 +39,27 @@ const routes = [
                 path: '/equip/equipTypeMgt',
                 name: 'equipTypeMgt',
                 component: () => import('./pages/edit/EquipTypeMgt.vue'),
+                // children: [
+                //     {
+                //         path: '/equip/equipTypeMgt/add',
+                //         name: 'equipTypeAdd',
+                //         component: () => import('./pages/edit/Equip.vue')
+                //     },
+                //     {
+                //         path: '/equip/equipTypeMgt/edit/:id',
+                //         name: 'equipTypeEdit',
+                //         component: () => import('./pages/edit/Equip.vue')
+                //     },
+                // ]
             },
             {
-                path: '/equip',
-                name: 'equipMgt',
+                path: '/equip/equipTypeMgt/add',
+                name: 'equipTypeAdd',
+                component: () => import('./pages/edit/Equip.vue')
+            },
+            {
+                path: '/equip/equipTypeMgt/edit/:id',
+                name: 'equipTypeEdit',
                 component: () => import('./pages/edit/Equip.vue')
             },
         ]

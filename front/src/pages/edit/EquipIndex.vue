@@ -23,11 +23,6 @@ export default {
                     label: h('a', { href: '/#/equip/equipTypeMgt' }, '设备类型管理'),
                     title: '设备类型管理',
                 },
-                {
-                    key: 'equipMgt',
-                    label: h('a', { href: '/#/equip' }, '设备类型详情管理'),
-                    title: '设备类型详情管理',
-                },
             ]
         }
     },

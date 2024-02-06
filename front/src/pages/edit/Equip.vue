@@ -18,11 +18,14 @@
                 }}</a-radio-button>
             </a-radio-group> -->
             <a-form layout="inline">
-                <a-form-item label="设备类型" name="type">
+                <!-- <a-form-item label="设备类型" name="type">
                     <a-select v-model:value="equipType" style="width: 120px" @change="typeChange" size="large">
                         <a-select-option v-for="item in equipTypeList" :value="item.id" :key="item.id">{{ item.type
                         }}</a-select-option>
                     </a-select>
+                </a-form-item> -->
+                <a-form-item label="设备类型名称" name="typeName">
+                    <a-input v-model:value="typeName" placeholder="设备类型名称" style="width: 120px" />
                 </a-form-item>
                 <a-form-item label="检查周期" name="cycle" style="margin-left: 2rem;">
                     <a-row>
@@ -74,7 +77,7 @@
                         <a-form-item :wrapper-col="{ offset: 20, span: 4 }" style="margin-top: 1rem;">
                             <a-button type="primary" @click="saveEquipInfo">保存</a-button>
                         </a-form-item>
-                        <a-form-item label="● 视频文件" name="video">
+                        <a-form-item v-if="mode == 'edit'" label="● 视频文件" name="video">
                             <a-upload v-model:file-list="videoFile" :max-count="1" accept="video/*" @change="handleChange"
                                 @remove="handleRemove" :data="{ deviceType: equipType, limit: 1, type: '2-1' }"
                                 :action="Utils.uploadUrl">
@@ -86,7 +89,7 @@
                         </a-form-item>
                     </a-card>
                 </a-col>
-                <a-col class="gutter-row" :span="12">
+                <a-col v-if="mode == 'edit'" class="gutter-row" :span="12">
                     <a-card title="作业指导" :bordered="false">
                         <a-form-item label="● 设计图" name="designFile">
                             <a-upload v-model:file-list="designFile" :max-count="10" @change="handleChange"
@@ -173,8 +176,11 @@ interface OtherObj { des: string, paramList: ParamType[] }
 export default {
     data() {
         return {
+            mode: "add",
             Utils: Utils,
             greeting: "设备信息管理",
+            typeName: "",
+            editId: -1,
             equipType: 0,
             paramList: [] as ParamType[],
             videoFile: ([
@@ -219,6 +225,7 @@ export default {
         }
     },
     async created() {
+        this.getMode();
         await this.getEquipTypeList();
     },
     methods: {
@@ -226,9 +233,17 @@ export default {
             const res = await http.get("/demo/deviceType/list.json");
             if (res && res.data && res.data.status === 200) {
                 this.equipTypeList = res.data.data;
-                this.equipType = this.equipTypeList[0].id;
-                this.typeChange();
+                if (this.mode === "edit") {
+                    this.equipType = this.equipTypeList.filter(item => item.id === this.editId)[0].id;
+                    this.typeChange();
+                }
             };
+        },
+        getMode() {
+            this.$route.path.includes("edit") ? this.mode = "edit" : this.mode = "add";
+            if (this.mode === "edit") {
+                this.editId = +this.$route.params.id;
+            }
         },
         async getFileList() {
             const res1 = http.get("/demo/file/list.json", { params: { deviceType: this.equipType, type: "2-1" } });
@@ -288,6 +303,7 @@ export default {
             });
             if (res.data.status === 200 && res.data.data) {
                 this.cycleValue = res.data.data.cycle;
+                this.typeName = res.data.data.type;
                 if (!!res.data.data.other) {
                     const otherObj = JSON.parse(res.data.data.other) as OtherObj;
                     this.dataSource = otherObj.paramList as any;
@@ -311,6 +327,10 @@ export default {
             this.dataSource = this.dataSource.filter(item => item.name !== name);
         },
         saveEquipInfo() {
+            if (!this.typeName) {
+                message.error('请输入设备类型名称');
+                return;
+            }
             if (!this.formState.des) {
                 message.error('请输入文字介绍');
                 return;
@@ -320,17 +340,33 @@ export default {
                 paramList: this.dataSource
             };
             const otherStr = JSON.stringify(otherObj);
-            const data = {
-                id: this.equipType,
-                cycle: this.cycleValue,
-                other: otherStr,
-            }
-            // 修改为body中传参
-            http.post("/demo/deviceType/update.json", data).then(res => {
-                if (res && res.data && res.data.status === 200) {
-                    message.success("保存成功");
+            if (this.mode === "add") {
+                const data = {
+                    cycle: this.cycleValue,
+                    other: otherStr,
+                    type: this.typeName
                 }
-            });
+                // 修改为body中传参
+                http.post("/demo/deviceType/add.json", data).then(res => {
+                    if (res && res.data && res.data.status === 200) {
+                        message.success("保存成功");
+                        this.$router.push({ name: "equipTypeMgt" });
+                    }
+                });
+            } else {
+                const data = {
+                    id: this.equipType,
+                    cycle: this.cycleValue,
+                    other: otherStr,
+                    type: this.typeName
+                }
+                // 修改为body中传参
+                http.post("/demo/deviceType/update.json", data).then(res => {
+                    if (res && res.data && res.data.status === 200) {
+                        message.success("保存成功");
+                    }
+                });
+            }
         },
 
         handleOk() {
