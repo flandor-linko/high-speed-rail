@@ -27,7 +27,15 @@ export default {
         }
     },
     async created() {
-        this.current = [this.$route.name];
+        switch (this.$route.name) {
+            case "stationMgt":
+            case "equipTypeMgt":
+                this.current = [this.$route.name];
+                break;
+            default:
+                this.current = ["equipTypeMgt"];
+                break;
+        }
     },
     methods: {
     }
