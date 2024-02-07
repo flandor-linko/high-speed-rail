@@ -69,20 +69,22 @@
                     @click="clickSpot(element.id)">
 
                     <!-- 与当前选中设备类型不同，悬浮显示；相同则直接显示 -->
-                    <a-popover v-if="equipType === -1" :title="element.name" trigger="hover">
+                    <a-popover v-if="equipType === -1" :title="element.name">
                         <template #content>
-                            <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
-                            <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
-                            <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
+                            <p style="line-height: 1.2rem;"><span style="width: 6rem;">设备类型</span>：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
+                            <p style="line-height: 0.8rem;"><span style="width: 6rem;margin-right: 0.33rem;">坐标X值</span>：{{ element.position.xIndex }}</p>
+                            <!-- <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
+                            <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p> -->
                         </template>
                         <EnvironmentTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
                     </a-popover>
                     <a-popover v-else-if="equipType === element.type" :title="element.name" trigger="hover">
                         <template #content>
-                            <p>设备类型：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
-                            <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
-                            <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p>
+                            <p style="line-height: 1.2rem;"><span style="width: 6rem;">设备类型</span>：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
+                            <p style="line-height: 0.8rem;"><span style="width: 6rem;margin-right: 0.33rem;">坐标X值</span>：{{ element.position.xIndex }}</p>
+                            <!-- <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
+                            <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p> -->
                         </template>
                         <EnvironmentTwoTone style="font-size:1.6rem;" />
                         <span>{{ element.name }}</span>
