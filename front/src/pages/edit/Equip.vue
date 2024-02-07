@@ -72,7 +72,8 @@
                                         <div v-if="editableData[record.value]" class="editable-cell-input-wrapper">
                                             <a-input v-model:value="editableData[record.value].value"
                                                 @pressEnter="save(record.value)" />
-                                            <check-outlined class="editable-cell-icon-check" @click="saveValue(record.value)" />
+                                            <check-outlined class="editable-cell-icon-check"
+                                                @click="saveValue(record.value)" />
                                         </div>
                                         <div v-else class="editable-cell-text-wrapper">
                                             {{ text || ' ' }}
@@ -243,14 +244,11 @@ export default {
     },
     methods: {
         async getEquipTypeList() {
-            const res = await http.get("/demo/deviceType/list.json");
-            if (res && res.data && res.data.status === 200) {
-                this.equipTypeList = res.data.data;
-                if (this.mode === "edit") {
-                    this.equipType = this.equipTypeList.filter(item => item.id === this.editId)[0].id;
-                    this.typeChange();
-                }
-            };
+            this.equipTypeList = _.cloneDeep(Utils.equipTypeList);
+            if (this.mode === "edit") {
+                this.equipType = this.equipTypeList.filter(item => item.id === this.editId)[0].id;
+                this.typeChange();
+            }
         },
         getMode() {
             this.$route.path.includes("edit") ? this.mode = "edit" : this.mode = "add";

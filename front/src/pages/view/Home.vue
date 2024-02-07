@@ -36,7 +36,7 @@ export default {
             window.location.href = "";
         },
         clickStation(stationId) {
-            this.$router.replace({ name: "station", params: { id: stationId } });
+            this.$router.replace({ name: "station", params: { id: stationId , typeId: -1 } });
         },
     }
 }
@@ -52,6 +52,6 @@ export default {
 }
 
 .menu {
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
 }
 </style>

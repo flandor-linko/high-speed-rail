@@ -13,12 +13,12 @@ const routes = [
                 component: () => import('./pages/view/homeInfo/HomeInfo.vue')
             },
             {
-                path: '/station/:id',
+                path: '/station/:id/:typeId',
                 name: 'station',
                 component: () => import('./pages/view/station/Station.vue'),
             },
             {
-                path: '/equipInfo/:equipId',
+                path: '/station/:id/equipInfo/:equipId/:typeId',
                 name: 'equipInfo',
                 component: () => import('./pages/view/equipInfo/EquipInfo.vue')
             },

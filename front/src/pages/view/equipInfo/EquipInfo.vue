@@ -1,4 +1,14 @@
 <template>
+    <a-row>
+        <a-col>
+            <span style="font-size: 1.2rem;font-weight: 600;">设备：</span>
+            <a-radio-group class="menu" v-model:value="equipType" button-style="solid" size="large" @change="typeChange">
+                <a-radio-button :value="-1" :key="-1">全部</a-radio-button>
+                <a-radio-button v-for="item in equipTypeList" :value="+item.id" :key="item.id">{{ item.type
+                }}</a-radio-button>
+            </a-radio-group>
+        </a-col>
+    </a-row>
     <h3 style="display: inline;font-weight: bolder;">站点：{{ stationName }}</h3>
     <h3 style="display: inline;margin-left: 2rem;font-weight: bolder;">设备：{{ equipTypeInfo.name }} {{ equipInfo?.name }}
     </h3>
@@ -133,6 +143,7 @@ export default {
             /**静态文件选中情况 */
             staticChecked: {},
             dynamicChecked: {},
+            equipType: -1,
             equipTypeList: [],
             equipTypeInfo: -1,
             equipId: -1,
@@ -155,6 +166,7 @@ export default {
     },
     async created() {
         this.equipId = this.$route.params.equipId;
+        this.equipType = +this.$route.params.typeId;
         await this.getEquipTypeList();
         await this.getEquipInfo();
         await this.getFileList();
@@ -198,10 +210,10 @@ export default {
             }
         },
         async getEquipTypeList() {
-            const res = await http.get("/demo/deviceType/list.json");
-            if (res && res.data && res.data.status === 200) {
-                this.equipTypeList = res.data.data;
-            }
+            this.equipTypeList = _.cloneDeep(Utils.equipTypeList);
+        },
+        typeChange() {
+            this.$router.push({ name: "station", params: { id: this.$route.params.id, typeId: this.equipType } });
         },
         formatTime(str) {
             return moment(str).zone("+08:00").format("YYYY-MM-DD HH:mm:ss");
@@ -785,6 +797,9 @@ export default {
     margin: 0;
 }
 
+.menu {
+    margin-bottom: 0.6rem;
+}
 
 .full-modal .ant-modal-content {
     display: flex;
@@ -800,5 +815,4 @@ export default {
     height: 6.6rem;
     overflow: auto;
 }
-
 </style>

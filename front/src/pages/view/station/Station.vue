@@ -71,8 +71,10 @@
                     <!-- 与当前选中设备类型不同，悬浮显示；相同则直接显示 -->
                     <a-popover v-if="equipType === -1" :title="element.name">
                         <template #content>
-                            <p style="line-height: 1.2rem;"><span style="width: 6rem;">设备类型</span>：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
-                            <p style="line-height: 0.8rem;"><span style="width: 6rem;margin-right: 0.33rem;">坐标X值</span>：{{ element.position.xIndex }}</p>
+                            <p style="line-height: 1.2rem;"><span style="width: 6rem;">设备类型</span>：{{
+                                equipTypeList.find(item => item.id === element.type).type }}</p>
+                            <p style="line-height: 0.8rem;"><span style="width: 6rem;margin-right: 0.33rem;">坐标X值</span>：{{
+                                element.position.xIndex }}</p>
                             <!-- <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
                             <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p> -->
                         </template>
@@ -81,8 +83,10 @@
                     </a-popover>
                     <a-popover v-else-if="equipType === element.type" :title="element.name" trigger="hover">
                         <template #content>
-                            <p style="line-height: 1.2rem;"><span style="width: 6rem;">设备类型</span>：{{ equipTypeList.find(item => item.id === element.type).type }}</p>
-                            <p style="line-height: 0.8rem;"><span style="width: 6rem;margin-right: 0.33rem;">坐标X值</span>：{{ element.position.xIndex }}</p>
+                            <p style="line-height: 1.2rem;"><span style="width: 6rem;">设备类型</span>：{{
+                                equipTypeList.find(item => item.id === element.type).type }}</p>
+                            <p style="line-height: 0.8rem;"><span style="width: 6rem;margin-right: 0.33rem;">坐标X值</span>：{{
+                                element.position.xIndex }}</p>
                             <!-- <p v-if="element.lastFixTime">上次养修时间：{{ parseTime(element.lastFixTime) }}</p>
                             <p v-if="element.nextFixTime">下次养修时间：{{ parseTime(element.nextFixTime) }}</p> -->
                         </template>
@@ -119,7 +123,8 @@
             <a-input-number v-model:value="spotEditData.position.xIndex" :min="0" style="width: 120px" />
         </a-form-item>
         <a-form-item label="设备类型" name="type">
-            <a-select v-model:value="spotEditData.type" show-search :options="options" style="width: 120px" :filterOption="filterOption">
+            <a-select v-model:value="spotEditData.type" show-search :options="options" style="width: 120px"
+                :filterOption="filterOption">
             </a-select>
         </a-form-item>
         <a-form-item label="删除设备" name="name">
@@ -187,7 +192,7 @@ export default {
             spotEditOpen: false,
             spotEditData: null,
             popoverOpen: true,
-            options:[],
+            options: [],
             triggerMode: 0,  // 0悬浮；1直接显示
             /**设备点列表 */
             spotList: [
@@ -219,10 +224,6 @@ export default {
         })
 
     },
-    // async updated() {
-    //     this.getData();
-    //     this.equipType = -1;
-    // },
     methods: {
         async getData() {
             this.mode = Mode.View;
@@ -233,16 +234,12 @@ export default {
             await this.getSpotList();
         },
         async getEquipTypeList() {
-            this.equipType = -1;
-            const res = await http.get("/demo/deviceType/list.json");
-            if (res && res.data && res.data.status === 200) {
-                this.equipTypeList = res.data.data;
-                this.options = this.equipTypeList.map(equipType=> {return {value: equipType.id, label: equipType.type};});
-                spotDefaultValue.type = this.equipTypeList[0].id;
-            };
+            this.equipType = +this.$route.params.typeId;
+            this.equipTypeList = _.cloneDeep(Utils.equipTypeList);
+            this.options = this.equipTypeList.map(equipType => { return { value: equipType.id, label: equipType.type }; });
+            spotDefaultValue.type = this.equipTypeList[0].id;
         },
         async getSpotList() {
-            // this.
             const res = await http.get("/demo/device/list.json?stationId=" + this.stationId);
             if (res && res.data && res.data.status === 200) {
                 const spotList = res.data.data;
@@ -262,7 +259,7 @@ export default {
             return option.label.indexOf(inputValue) >= 0;
         },
         clickSpot(equipId) {
-            this.$router.push({ name: "equipInfo", params: { equipId: equipId } });
+            this.$router.push({ name: "equipInfo", params: { equipId: equipId, typeId: this.equipType } });
         },
         modalOk() {
             this.open = false;
@@ -402,7 +399,7 @@ export default {
 }
 
 .menu {
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
 }
 
 .drag-area {
@@ -436,5 +433,4 @@ export default {
 
 .edit-row {
     display: flex;
-}
-</style>
+}</style>

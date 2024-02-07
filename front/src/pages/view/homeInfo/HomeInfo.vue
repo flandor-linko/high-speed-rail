@@ -30,9 +30,10 @@
 </template>
 
 <script lang="ts">
+import _ from "lodash";
+import moment from 'moment';
 import http from "../../../util/http";
 import Utils from "../../../util/Utils";
-import moment from 'moment';
 
 interface DataItem {
     title: string;
@@ -70,10 +71,7 @@ export default {
     },
     methods: {
         async getTypeList() {
-            const res = await http.get("/demo/deviceType/list.json");
-            if (res && res.data && res.data.status === 200) {
-                this.equipTypeList = res.data.data;
-            };
+            this.equipTypeList = _.cloneDeep(Utils.equipTypeList);
         },
         async getRemainInfo() {
             const res0 = await http.get("/demo/device/checkCycleReminder.json");
@@ -130,4 +128,5 @@ export default {
 <style scoped>
 .title {
     font-weight: 800;
-}</style>
+}
+</style>

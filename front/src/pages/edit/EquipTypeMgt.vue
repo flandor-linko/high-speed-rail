@@ -24,7 +24,9 @@
 
 <script lang="ts">
 import { message } from 'ant-design-vue';
+import _ from "lodash";
 import http from '../../util/http';
+import Utils from '../../util/utils';
 
 
 export default {
@@ -52,11 +54,9 @@ export default {
     methods: {
         async getData() {
             this.loading = true;
-            const res = await http.get("/demo/deviceType/list.json");
-            if (res && res.data && res.data.status === 200) {
-                this.dataSource = res.data.data;
-                this.loading = false;
-            }
+            await Utils.getEquipTypeList();
+            this.dataSource = _.cloneDeep(Utils.equipTypeList);
+            this.loading = false;
         },
         handleAdd() {
             this.$router.push({ name: "equipTypeAdd" });

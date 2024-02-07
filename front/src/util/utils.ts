@@ -1,8 +1,10 @@
+import http from "./http";
+
 const Utils = {
     /**下载文件接口 */
-    filePrefix: `${import.meta.env.PROD ? '' :'/demo'}/file/download.json?id=`,
+    filePrefix: `${import.meta.env.PROD ? '' : '/demo'}/file/download.json?id=`,
     /**上传文件接口 */
-    uploadUrl: `${import.meta.env.PROD ? '' :'/demo'}/file/upload.json`,
+    uploadUrl: `${import.meta.env.PROD ? '' : '/demo'}/file/upload.json`,
     /**站点列表 */
     stationList: [],
     colorList: [
@@ -28,6 +30,14 @@ const Utils = {
         "#660033",
         "#663300",
     ],
+    equipTypeList: [],
+    getEquipTypeList: async function () {
+        const res1 = await http.get("/demo/deviceType/list.json");
+        if (res1 && res1.data && res1.data.status === 200) {
+            const equipTypeList = res1.data.data;
+            this.equipTypeList = equipTypeList;
+        };
+    }
 }
 
 export default Utils;
