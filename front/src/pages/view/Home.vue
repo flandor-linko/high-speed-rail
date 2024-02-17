@@ -29,14 +29,20 @@ export default {
         }
     },
     async created() {
-        this.site = +(this.$route.params.id ? this.$route.params.id : "0");
+        this.getData();
+        this.$router.afterEach(() => {
+            this.getData();
+        })
     },
     methods: {
+        getData() {
+            this.site = +(this.$route.params.id ? this.$route.params.id : "0");
+        },
         goHome() {
             window.location.href = "";
         },
         clickStation(stationId) {
-            this.$router.replace({ name: "station", params: { id: stationId , typeId: -1 } });
+            this.$router.replace({ name: "station", params: { id: stationId, typeId: -1 } });
         },
     }
 }
