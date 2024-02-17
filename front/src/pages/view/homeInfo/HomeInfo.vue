@@ -4,7 +4,7 @@
             <a-card :title="data[0].title" :bodyStyle="{ height: '40rem', overflow: 'auto' }">
                 <a-list size="small" bordered :data-source="data[0].list">
                     <template #renderItem="{ item }">
-                        <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{
+                        <a-list-item @click="clickEquip(item)"><a-tag :color="getStationColor(item.stationId)">{{
                             getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{
         item.name }}</span>（ {{ getTypeName(item.type) }} ） 应在 <a-tag color="blue">{{
         formatTime(item.nextFixTime) }}</a-tag>
@@ -17,7 +17,7 @@
             <a-card :title="data[1].title" :bodyStyle="{ height: '40rem', overflow: 'auto' }">
                 <a-list size="small" bordered :data-source="data[1].list">
                     <template #renderItem="{ item }">
-                        <a-list-item @click="clickEquip(item.id)"><a-tag :color="getStationColor(item.stationId)">{{
+                        <a-list-item @click="clickEquip(item)"><a-tag :color="getStationColor(item.stationId)">{{
                             getStationName(item.stationId) }}</a-tag> <span style="text-decoration: underline;">{{
         item.name }}</span>（ {{ getTypeName(item.type) }} ） 已在 <a-tag color="blue">{{
         formatTime(item.lastFixTime) }}</a-tag>
@@ -116,8 +116,8 @@ export default {
         formatTime(timeStr: string) {
             return moment(timeStr).zone("+08:00").format("YYYY-MM-DD");
         },
-        clickEquip(id) {
-            this.$router.push({ name: "equipInfo", params: { equipId: id } });
+        clickEquip(info) {
+            this.$router.push({ name: "equipInfo", params: { id: info.stationId, equipId: info.id, typeId: info.type } });
         },
     }
 }
